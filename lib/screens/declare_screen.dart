@@ -181,7 +181,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width > 960;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

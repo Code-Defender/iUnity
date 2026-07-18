@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         final isLoggedIn = snapshot.hasData && snapshot.data != null;
         final theme = Theme.of(context);
         final size = MediaQuery.of(context).size;
-        final isDesktop = size.width > 768;
+        final isDesktop = size.width > 960;
 
         return Scaffold(
           appBar: isDesktop

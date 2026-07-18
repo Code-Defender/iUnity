@@ -184,7 +184,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width > 960;
 
     if (_isLoadingStatus) {
       return const SizedBox(

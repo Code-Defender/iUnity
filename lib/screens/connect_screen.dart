@@ -156,7 +156,7 @@ class _ConnectScreenState extends State<ConnectScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
+    final isDesktop = size.width > 960;
 
     return FadeTransition(
       opacity: _fadeIn,
