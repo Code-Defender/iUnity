@@ -17,7 +17,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final AuthService _authService = AuthService();
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -30,12 +31,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-    
+
     _pulseAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
 
@@ -70,9 +68,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _onNavItemTapped(int index, String title, bool isLoggedIn) {
     if (!isLoggedIn && index != 0) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
 
@@ -82,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       });
       return;
     }
-    
+
     // Placeholder navigation indicator for other tabs
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           appBar: isDesktop
               ? null // Use custom header for desktop
               : AppBar(
-                  backgroundColor: AppColors.background.withOpacity(0.8),
+                  backgroundColor: AppColors.background.withValues(alpha: 0.8),
                   elevation: 0,
                   titleSpacing: 20,
                   title: Row(
@@ -126,15 +124,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 20),
+                      icon: const Icon(
+                        Icons.person_outline_rounded,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
                       onPressed: () {
                         if (isLoggedIn) {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileScreen(),
+                            ),
                           );
                         } else {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
                           );
                         }
                       },
@@ -143,16 +149,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     const SizedBox(width: 16),
                     if (isLoggedIn)
                       IconButton(
-                        icon: const Icon(Icons.logout_rounded, color: AppColors.primary, size: 20),
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
                         onPressed: _handleLogout,
                         tooltip: "Disconnect Signal",
                       )
                     else
                       IconButton(
-                        icon: const Icon(Icons.login_rounded, color: AppColors.primary, size: 20),
+                        icon: const Icon(
+                          Icons.login_rounded,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
                         onPressed: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
                           );
                         },
                         tooltip: "Connect Signal",
@@ -169,7 +185,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1280),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 16.0,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -241,7 +260,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 });
                               } else {
                                 Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
                                 );
                               }
                             },
@@ -262,11 +283,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   onPressed: () {
                     if (isLoggedIn) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Creating a new corridor signal...")),
+                        const SnackBar(
+                          content: Text("Creating a new corridor signal..."),
+                        ),
                       );
                     } else {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
                       );
                     }
                   },
@@ -285,9 +310,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Container(
       height: 64,
       decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,15 +343,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               const Icon(Icons.language, color: AppColors.primary, size: 20),
               const SizedBox(width: 16),
               IconButton(
-                icon: const Icon(Icons.person_outline_rounded, color: AppColors.primary, size: 20),
+                icon: const Icon(
+                  Icons.person_outline_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
                 onPressed: () {
                   if (isLoggedIn) {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileScreen(),
+                      ),
                     );
                   } else {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
                     );
                   }
                 },
@@ -337,7 +368,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               const SizedBox(width: 16),
               if (isLoggedIn)
                 IconButton(
-                  icon: const Icon(Icons.logout_rounded, color: AppColors.primary, size: 20),
+                  icon: const Icon(
+                    Icons.logout_rounded,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                   onPressed: _handleLogout,
                   tooltip: "Disconnect Signal",
                 )
@@ -345,12 +380,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
                     );
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   child: Text(
                     'LOG IN',
@@ -362,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                 ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -375,7 +415,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: TextButton(
         onPressed: () => _onNavItemTapped(index, label, isLoggedIn),
         style: TextButton.styleFrom(
-          foregroundColor: isActive ? AppColors.primary : AppColors.onSurfaceMuted,
+          foregroundColor: isActive
+              ? AppColors.primary
+              : AppColors.onSurfaceMuted,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
         child: Text(
@@ -394,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow.withOpacity(0.9),
+        color: AppColors.surfaceContainerLow.withValues(alpha: 0.9),
         border: const Border(
           top: BorderSide(color: AppColors.border, width: 0.5),
         ),
@@ -402,17 +444,57 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildMobileNavItem(Icons.home_rounded, "Home", 0, isLoggedIn),
-          _buildMobileNavItem(Icons.verified_user_rounded, "Declare", 1, isLoggedIn),
-          _buildMobileNavItem(Icons.campaign_rounded, "Voice", 2, isLoggedIn),
-          _buildMobileNavItem(Icons.groups_rounded, "Connect", 3, isLoggedIn),
-          _buildMobileNavItem(Icons.auto_stories_rounded, "Doctrine", 4, isLoggedIn),
+          Expanded(
+            child: _buildMobileNavItem(
+              Icons.home_rounded,
+              "Home",
+              0,
+              isLoggedIn,
+            ),
+          ),
+          Expanded(
+            child: _buildMobileNavItem(
+              Icons.verified_user_rounded,
+              "Declare",
+              1,
+              isLoggedIn,
+            ),
+          ),
+          Expanded(
+            child: _buildMobileNavItem(
+              Icons.campaign_rounded,
+              "Voice",
+              2,
+              isLoggedIn,
+            ),
+          ),
+          Expanded(
+            child: _buildMobileNavItem(
+              Icons.groups_rounded,
+              "Connect",
+              3,
+              isLoggedIn,
+            ),
+          ),
+          Expanded(
+            child: _buildMobileNavItem(
+              Icons.auto_stories_rounded,
+              "Doctrine",
+              4,
+              isLoggedIn,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMobileNavItem(IconData icon, String label, int index, bool isLoggedIn) {
+  Widget _buildMobileNavItem(
+    IconData icon,
+    String label,
+    int index,
+    bool isLoggedIn,
+  ) {
     final isActive = _currentNavIndex == index;
     return InkWell(
       onTap: () => _onNavItemTapped(index, label, isLoggedIn),
@@ -423,13 +505,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: isActive
                 ? BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   )
                 : null,
             child: Icon(
               icon,
-              color: isActive ? AppColors.primary : AppColors.onSurfaceMuted.withOpacity(0.6),
+              color: isActive
+                  ? AppColors.primary
+                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
               size: 24,
             ),
           ),
@@ -439,9 +523,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? AppColors.primary : AppColors.onSurfaceMuted.withOpacity(0.6),
+              color: isActive
+                  ? AppColors.primary
+                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -461,7 +547,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             decoration: BoxDecoration(
               color: AppColors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                width: 1,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -481,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Headline
           RichText(
             textAlign: TextAlign.center,
@@ -492,7 +581,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
               children: [
                 TextSpan(
-                  text: isDesktop ? "Truckers of the World,\n" : "Truckers of the\nWorld, ",
+                  text: isDesktop
+                      ? "Truckers of the World,\n"
+                      : "Truckers of the\nWorld, ",
                 ),
                 TextSpan(
                   text: "Unite!",
@@ -528,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ],
           ),
           const SizedBox(height: 24),
-          
+
           // Subtitle
           Container(
             constraints: const BoxConstraints(maxWidth: 680),
@@ -543,23 +634,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 32),
-          
+
           // Action Buttons
           isDesktop
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
+                      onPressed: () =>
+                          _onNavItemTapped(4, "Doctrine", isLoggedIn),
                       child: const Text("THE TRUCKERS MANIFESTO"),
                     ),
                     const SizedBox(width: 16),
                     OutlinedButton(
-                      onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
+                      onPressed: () =>
+                          _onNavItemTapped(4, "Doctrine", isLoggedIn),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.onSurface,
-                        side: const BorderSide(color: AppColors.border, width: 1.5),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        side: const BorderSide(
+                          color: AppColors.border,
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -581,7 +680,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
+                          onPressed: () =>
+                              _onNavItemTapped(4, "Doctrine", isLoggedIn),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
@@ -592,10 +692,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
-                          onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
+                          onPressed: () =>
+                              _onNavItemTapped(4, "Doctrine", isLoggedIn),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.onSurface,
-                            side: const BorderSide(color: AppColors.border, width: 1.5),
+                            side: const BorderSide(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -613,7 +717,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                     ],
                   ),
-                )
+                ),
         ],
       ),
     );
@@ -658,7 +762,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 textAlign: TextAlign.center,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontSize: 10,
-                  color: AppColors.onSurfaceMuted.withOpacity(0.8),
+                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
                   letterSpacing: 1.2,
                 ),
               ),
@@ -674,15 +778,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: _buildMapCard(theme, true),
-          ),
+          Expanded(flex: 2, child: _buildMapCard(theme, true)),
           const SizedBox(width: 20),
-          Expanded(
-            flex: 1,
-            child: _buildInsightsCard(theme, isLoggedIn),
-          ),
+          Expanded(flex: 1, child: _buildInsightsCard(theme, isLoggedIn)),
         ],
       );
     } else {
@@ -737,7 +835,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           color: AppColors.primary,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.5 * _pulseAnimation.value),
+                              color: AppColors.primary.withValues(
+                                alpha: 0.5 * _pulseAnimation.value,
+                              ),
                               blurRadius: 8,
                               spreadRadius: 2,
                             ),
@@ -767,7 +867,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             decoration: BoxDecoration(
               color: AppColors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border.withOpacity(0.3)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -775,9 +877,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 animation: _pulseAnimation,
                 builder: (context, child) {
                   return CustomPaint(
-                    painter: MapPainter(
-                      pulseValue: _pulseAnimation.value,
-                    ),
+                    painter: MapPainter(pulseValue: _pulseAnimation.value),
                   );
                 },
               ),
@@ -788,9 +888,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             children: [
               _buildMapLegendItem(AppColors.primary, "HIGH ACTIVITY"),
               const SizedBox(width: 20),
-              _buildMapLegendItem(AppColors.primary.withOpacity(0.4), "CONNECTED CORRIDORS"),
+              _buildMapLegendItem(
+                AppColors.primary.withValues(alpha: 0.4),
+                "CONNECTED CORRIDORS",
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -802,10 +905,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 8),
         Text(
@@ -815,7 +915,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             color: AppColors.onSurfaceMuted,
             letterSpacing: 1.0,
           ),
-        )
+        ),
       ],
     );
   }
@@ -826,20 +926,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         "category": "ANALYSIS",
         "readTime": "5 min read",
         "title": "The Future of the I-80 Corridor",
-        "desc": "A deep dive into how logistics automation is reshaping the backbone of American freight transport."
+        "desc":
+            "A deep dive into how logistics automation is reshaping the backbone of American freight transport.",
       },
       {
         "category": "STORY",
         "readTime": "8 min read",
         "title": "Mental Health on the Long Haul",
-        "desc": "Veteran drivers share their strategies for maintaining mental clarity and connection while on the road."
+        "desc":
+            "Veteran drivers share their strategies for maintaining mental clarity and connection while on the road.",
       },
       {
         "category": "ADVOCACY",
         "readTime": "4 min read",
         "title": "Why Unity Matters in 2020",
-        "desc": "Understanding the collective power of individual drivers in an increasingly fragmented global economy."
-      }
+        "desc":
+            "Understanding the collective power of individual drivers in an increasingly fragmented global economy.",
+      },
     ];
 
     return GlassCard(
@@ -862,11 +965,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onTap: () {
                   if (isLoggedIn) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Loading insight archive...")),
+                      const SnackBar(
+                        content: Text("Loading insight archive..."),
+                      ),
                     );
                   } else {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
                     );
                   }
                 },
@@ -900,7 +1007,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     );
                   } else {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
                     );
                   }
                 },
@@ -910,9 +1019,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.12),
+                            color: AppColors.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -929,7 +1041,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           item["readTime"]!,
                           style: theme.textTheme.labelLarge?.copyWith(
                             fontSize: 8,
-                            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+                            color: AppColors.onSurfaceMuted.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       ],
@@ -957,7 +1071,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
               );
             },
-          )
+          ),
         ],
       ),
     );
@@ -979,10 +1093,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 24),
-          const SizedBox(
-            width: 120,
-            child: RoadLineSeparator(),
-          ),
+          const SizedBox(width: 120, child: RoadLineSeparator()),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
@@ -1008,7 +1119,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColors.primary.withOpacity(0.4),
+                  AppColors.primary.withValues(alpha: 0.4),
                   Colors.transparent,
                 ],
               ),
@@ -1021,7 +1132,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             "ESTABLISHED IN SOLIDARITY • 2020",
             style: GoogleFonts.jetBrainsMono(
               fontSize: 9,
-              color: AppColors.onSurfaceMuted.withOpacity(0.4),
+              color: AppColors.onSurfaceMuted.withValues(alpha: 0.4),
               letterSpacing: 3.0,
             ),
           ),
@@ -1040,7 +1151,7 @@ class MapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.border.withOpacity(0.15)
+      ..color = AppColors.border.withValues(alpha: 0.15)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -1057,8 +1168,14 @@ class MapPainter extends CustomPainter {
     final nodes = [
       Offset(size.width * 0.18, size.height * 0.35), // NW (Seattle/LA)
       Offset(size.width * 0.35, size.height * 0.30), // NE (New York/Chicago)
-      Offset(size.width * 0.42, size.height * 0.70), // South America (Sao Paulo)
-      Offset(size.width * 0.54, size.height * 0.28), // West Europe (London/Paris)
+      Offset(
+        size.width * 0.42,
+        size.height * 0.70,
+      ), // South America (Sao Paulo)
+      Offset(
+        size.width * 0.54,
+        size.height * 0.28,
+      ), // West Europe (London/Paris)
       Offset(size.width * 0.62, size.height * 0.75), // South Africa (Cape Town)
       Offset(size.width * 0.75, size.height * 0.48), // India (Mumbai/Delhi)
       Offset(size.width * 0.85, size.height * 0.36), // East Asia (Tokyo)
@@ -1080,7 +1197,7 @@ class MapPainter extends CustomPainter {
 
     // Paint active connection lines
     final linePaint = Paint()
-      ..color = AppColors.primary.withOpacity(0.15)
+      ..color = AppColors.primary.withValues(alpha: 0.15)
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
 
@@ -1096,14 +1213,16 @@ class MapPainter extends CustomPainter {
     for (int i = 0; i < nodes.length; i++) {
       final node = nodes[i];
       // Larger pulsing active hubs, smaller solid connections
-      final isMajorHub = i == 1 || i == 3 || i == 6; 
-      
+      final isMajorHub = i == 1 || i == 3 || i == 6;
+
       if (isMajorHub) {
         // Pulse ring paint
         final pulsePaint = Paint()
-          ..color = AppColors.primary.withOpacity(0.3 * (1.0 - pulseValue))
+          ..color = AppColors.primary.withValues(
+            alpha: 0.3 * (1.0 - pulseValue),
+          )
           ..style = PaintingStyle.fill;
-        
+
         canvas.drawCircle(node, 16.0 * pulseValue, pulsePaint);
         canvas.drawCircle(node, 6.0, nodeFillPaint);
       } else {

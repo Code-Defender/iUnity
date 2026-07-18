@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../theme/app_theme.dart';
+
 import '../services/auth_service.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
 
 class DeclareScreen extends StatefulWidget {
   final VoidCallback onReturnToDashboard;
@@ -39,12 +40,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
     "Global Corridor",
   ];
 
-  final List<String> _languages = [
-    "English",
-    "Spanish",
-    "French",
-    "Punjabi",
-  ];
+  final List<String> _languages = ["English", "Spanish", "French", "Punjabi"];
 
   @override
   void initState() {
@@ -70,46 +66,57 @@ class _DeclareScreenState extends State<DeclareScreen> {
     });
 
     try {
-      final doc = await _databaseService.getUserProfile(user.uid).timeout(
-        const Duration(seconds: 3),
-      );
+      final doc = await _databaseService
+          .getUserProfile(user.uid)
+          .timeout(const Duration(seconds: 3));
       if (doc.exists && doc.data() != null) {
         final data = doc.data()!;
-        setState(() {
-          if (data['displayName'] != null) {
-            _nameController.text = data['displayName'].toString();
-          } else if (user.displayName != null) {
-            _nameController.text = user.displayName!;
-          }
-          if (data['phone'] != null) {
-            _phoneController.text = data['phone'].toString();
-          }
-          if (data['role'] != null) {
-            final roleStr = data['role'].toString().toUpperCase();
-            if (roleStr == "DRIVER" || roleStr == "OWNER" || roleStr == "BOTH") {
-              _selectedRole = roleStr;
+        if (mounted) {
+          setState(() {
+            if (data['displayName'] != null) {
+              _nameController.text = data['displayName'].toString();
+            } else if (user.displayName != null) {
+              _nameController.text = user.displayName!;
             }
-          }
-          if (data['country'] != null && _countries.contains(data['country'])) {
-            _selectedCountry = data['country'].toString();
-          }
-          if (data['preferredCorridor'] != null) {
-            _corridorController.text = data['preferredCorridor'].toString();
-          }
-          if (data['primaryLanguage'] != null && _languages.contains(data['primaryLanguage'])) {
-            _selectedLanguage = data['primaryLanguage'].toString();
-          }
-          if (data['localChapter'] != null) {
-            _chapterController.text = data['localChapter'].toString();
-          }
-        });
+            if (data['phone'] != null) {
+              _phoneController.text = data['phone'].toString();
+            }
+            if (data['role'] != null) {
+              final roleStr = data['role'].toString().toUpperCase();
+              if (roleStr == "DRIVER" ||
+                  roleStr == "OWNER" ||
+                  roleStr == "BOTH") {
+                _selectedRole = roleStr;
+              }
+            }
+            if (data['country'] != null &&
+                _countries.contains(data['country'])) {
+              _selectedCountry = data['country'].toString();
+            }
+            if (data['preferredCorridor'] != null) {
+              _corridorController.text = data['preferredCorridor'].toString();
+            }
+            if (data['preferredCorridor'] != null) {
+              _corridorController.text = data['preferredCorridor'].toString();
+            }
+            if (data['primaryLanguage'] != null &&
+                _languages.contains(data['primaryLanguage'])) {
+              _selectedLanguage = data['primaryLanguage'].toString();
+            }
+            if (data['localChapter'] != null) {
+              _chapterController.text = data['localChapter'].toString();
+            }
+          });
+        }
       }
     } catch (e) {
       debugPrint("Error loading profile: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Unable to reach database: loaded default profile options. ($e)"),
+            content: Text(
+              "Unable to reach database: loaded default profile options. ($e)",
+            ),
             duration: const Duration(seconds: 4),
             backgroundColor: AppColors.surfaceContainerHigh,
           ),
@@ -142,17 +149,21 @@ class _DeclareScreenState extends State<DeclareScreen> {
 
     try {
       // Update profile with role and mission details using set(merge: true) to make it robust
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'displayName': _nameController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'role': _selectedRole,
-        'country': _selectedCountry,
-        'preferredCorridor': _corridorController.text.trim(),
-        'primaryLanguage': _selectedLanguage,
-        'localChapter': _chapterController.text.trim(),
-        'declaredAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)).timeout(const Duration(seconds: 5));
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({
+            'displayName': _nameController.text.trim(),
+            'phone': _phoneController.text.trim(),
+            'role': _selectedRole,
+            'country': _selectedCountry,
+            'preferredCorridor': _corridorController.text.trim(),
+            'primaryLanguage': _selectedLanguage,
+            'localChapter': _chapterController.text.trim(),
+            'declaredAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true))
+          .timeout(const Duration(seconds: 5));
 
       if (mounted) {
         setState(() {
@@ -197,10 +208,12 @@ class _DeclareScreenState extends State<DeclareScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surfaceContainerLow,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.15),
+                      color: AppColors.primary.withValues(alpha: 0.15),
                       blurRadius: 16,
                       spreadRadius: 4,
                     ),
@@ -227,17 +240,14 @@ class _DeclareScreenState extends State<DeclareScreen> {
               Text(
                 "\"We declare that truckers are not marginal. They are foundational.\"",
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.onSurfaceMuted.withOpacity(0.9),
+                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.9),
                   fontSize: isDesktop ? 18 : 15,
                   fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              const SizedBox(
-                width: 280,
-                child: RoadLineSeparator(),
-              ),
+              const SizedBox(width: 280, child: RoadLineSeparator()),
               const SizedBox(height: 48),
             ],
           ),
@@ -247,15 +257,17 @@ class _DeclareScreenState extends State<DeclareScreen> {
         _showSuccess
             ? _buildSuccessState(theme)
             : _isLoading
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 64.0),
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                      ),
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 64.0),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
                     ),
-                  )
-                : _buildFormLayout(theme, isDesktop),
+                  ),
+                ),
+              )
+            : _buildFormLayout(theme, isDesktop),
       ],
     );
   }
@@ -265,15 +277,9 @@ class _DeclareScreenState extends State<DeclareScreen> {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 5,
-            child: _buildLeftContextColumn(theme),
-          ),
+          Expanded(flex: 5, child: _buildLeftContextColumn(theme)),
           const SizedBox(width: 48),
-          Expanded(
-            flex: 7,
-            child: _buildRightFormColumn(theme),
-          ),
+          Expanded(flex: 7, child: _buildRightFormColumn(theme)),
         ],
       );
     } else {
@@ -315,9 +321,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
               const SizedBox(height: 20),
               Text(
                 "The Transcontinental Owners and Drivers Association (TODA) represents the backbone of global commerce. By declaring your identity, you join a network of over 140,000 professionals standing for dignity and collective strength.",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  height: 1.6,
-                ),
+                style: theme.textTheme.bodyMedium?.copyWith(height: 1.6),
               ),
               const SizedBox(height: 24),
               // Advantages Checklist
@@ -351,13 +355,17 @@ class _DeclareScreenState extends State<DeclareScreen> {
                         Icon(
                           Icons.local_shipping_rounded,
                           size: 48,
-                          color: AppColors.onSurfaceMuted.withOpacity(0.3),
+                          color: AppColors.onSurfaceMuted.withValues(
+                            alpha: 0.3,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           "Cinematic Transit Signal",
                           style: theme.textTheme.labelLarge?.copyWith(
-                            color: AppColors.onSurfaceMuted.withOpacity(0.4),
+                            color: AppColors.onSurfaceMuted.withValues(
+                              alpha: 0.4,
+                            ),
                           ),
                         ),
                       ],
@@ -373,7 +381,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.background.withOpacity(0.7),
+                        AppColors.background.withValues(alpha: 0.7),
                       ],
                     ),
                   ),
@@ -508,9 +516,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
                     const SizedBox(height: 16),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _buildChapterInput(theme)),
-                      ],
+                      children: [Expanded(child: _buildChapterInput(theme))],
                     ),
                   ],
                 );
@@ -533,10 +539,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const SizedBox(
-                  width: 80,
-                  child: RoadLineSeparator(height: 1),
-                ),
+                const SizedBox(width: 80, child: RoadLineSeparator(height: 1)),
               ],
             ),
           ),
@@ -550,7 +553,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.onPrimary,
               elevation: 8,
-              shadowColor: AppColors.primary.withOpacity(0.25),
+              shadowColor: AppColors.primary.withValues(alpha: 0.25),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -561,7 +564,9 @@ class _DeclareScreenState extends State<DeclareScreen> {
                     width: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.onPrimary,
+                      ),
                     ),
                   )
                 : Row(
@@ -586,7 +591,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
             "BY PRESSING DECLARE, YOU AFFIRM YOUR PLACE IN THE UNITY",
             style: theme.textTheme.labelLarge?.copyWith(
               fontSize: 9,
-              color: AppColors.onSurfaceMuted.withOpacity(0.5),
+              color: AppColors.onSurfaceMuted.withValues(alpha: 0.5),
               letterSpacing: 1.0,
             ),
             textAlign: TextAlign.center,
@@ -613,7 +618,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.08)
+              ? AppColors.primary.withValues(alpha: 0.08)
               : AppColors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
@@ -625,7 +630,9 @@ class _DeclareScreenState extends State<DeclareScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted.withOpacity(0.6),
+              color: isSelected
+                  ? AppColors.primary
+                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
               size: 28,
             ),
             const SizedBox(height: 10),
@@ -634,7 +641,9 @@ class _DeclareScreenState extends State<DeclareScreen> {
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted,
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.onSurfaceMuted,
                 letterSpacing: 1.0,
               ),
             ),
@@ -652,7 +661,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
           "ASSOCIATE NAME",
           style: theme.textTheme.labelLarge?.copyWith(
             fontSize: 9,
-            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 6),
@@ -679,7 +688,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
           "PHONE NUMBER",
           style: theme.textTheme.labelLarge?.copyWith(
             fontSize: 9,
-            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 6),
@@ -707,12 +716,12 @@ class _DeclareScreenState extends State<DeclareScreen> {
           "COUNTRY",
           style: theme.textTheme.labelLarge?.copyWith(
             fontSize: 9,
-            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          value: _selectedCountry,
+          initialValue: _selectedCountry,
           dropdownColor: AppColors.surfaceContainer,
           iconEnabledColor: AppColors.primary,
           decoration: const InputDecoration(
@@ -742,7 +751,6 @@ class _DeclareScreenState extends State<DeclareScreen> {
     );
   }
 
-
   Widget _buildLanguageDropdown(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -751,12 +759,12 @@ class _DeclareScreenState extends State<DeclareScreen> {
           "PRIMARY LANGUAGE",
           style: theme.textTheme.labelLarge?.copyWith(
             fontSize: 9,
-            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          value: _selectedLanguage,
+          initialValue: _selectedLanguage,
           dropdownColor: AppColors.surfaceContainer,
           iconEnabledColor: AppColors.primary,
           decoration: const InputDecoration(
@@ -794,7 +802,7 @@ class _DeclareScreenState extends State<DeclareScreen> {
           "LOCAL CHAPTER",
           style: theme.textTheme.labelLarge?.copyWith(
             fontSize: 9,
-            color: AppColors.onSurfaceMuted.withOpacity(0.6),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 6),
@@ -828,12 +836,14 @@ class _DeclareScreenState extends State<DeclareScreen> {
                 width: 96,
                 height: 96,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.15),
+                      color: AppColors.primary.withValues(alpha: 0.15),
                       blurRadius: 24,
                       spreadRadius: 6,
                     ),
@@ -866,15 +876,15 @@ class _DeclareScreenState extends State<DeclareScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              const SizedBox(
-                width: 200,
-                child: RoadLineSeparator(),
-              ),
+              const SizedBox(width: 200, child: RoadLineSeparator()),
               const SizedBox(height: 36),
               TextButton(
                 onPressed: widget.onReturnToDashboard,
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
                 child: Text(
                   "RETURN TO DASHBOARD",

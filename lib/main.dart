@@ -7,21 +7,21 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    
+
     // Initialize notifications
     final notificationService = NotificationService();
     await notificationService.initialize();
-    
+
     // Fetch and print the FCM device token
     String? fcmToken = await notificationService.getFCMToken();
-    print("FCM Setup Done. Device Token: $fcmToken");
+    debugPrint("FCM Setup Done. Device Token: $fcmToken");
   } catch (e) {
-    print("Firebase Initialization Error: $e");
+    debugPrint("Firebase Initialization Error: $e");
   }
 
   runApp(const MyApp());

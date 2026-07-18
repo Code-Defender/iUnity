@@ -133,7 +133,10 @@ class _ConnectScreenState extends State<ConnectScreen>
       vsync: this,
       duration: const Duration(seconds: 6),
     )..repeat();
-    _gridAnimation = CurvedAnimation(parent: _gridController, curve: Curves.linear);
+    _gridAnimation = CurvedAnimation(
+      parent: _gridController,
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -147,7 +150,7 @@ class _ConnectScreenState extends State<ConnectScreen>
   void _showComingSoon(String feature) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (ctx) => _ComingSoonDialog(feature: feature),
     );
   }
@@ -208,12 +211,15 @@ class _ConnectScreenState extends State<ConnectScreen>
             children: [
               // Global Signal Active Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(40),
                   border: Border.all(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -223,7 +229,8 @@ class _ConnectScreenState extends State<ConnectScreen>
                     AnimatedBuilder(
                       animation: _signalController,
                       builder: (context, _) {
-                        final scale = 1.0 +
+                        final scale =
+                            1.0 +
                             0.5 *
                                 math.sin(_signalController.value * 2 * math.pi);
                         return Transform.scale(
@@ -236,7 +243,9 @@ class _ConnectScreenState extends State<ConnectScreen>
                               color: AppColors.primary,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.6),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.6,
+                                  ),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 ),
@@ -280,7 +289,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                         color: AppColors.primary,
                         shadows: [
                           Shadow(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             blurRadius: 24,
                           ),
                         ],
@@ -391,7 +400,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                 foregroundColor: AppColors.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 side: BorderSide(
-                  color: AppColors.border.withOpacity(0.6),
+                  color: AppColors.border.withValues(alpha: 0.6),
                   width: 1,
                 ),
                 textStyle: GoogleFonts.inter(
@@ -410,9 +419,9 @@ class _ConnectScreenState extends State<ConnectScreen>
   Widget _buildStatsGrid(bool isDesktop) {
     final stats = [
       {'value': '1.2M+', 'label': 'Associates Declared'},
-      {'value': '142',   'label': 'Countries Connected'},
-      {'value': '850K',  'label': 'Voices Shared'},
-      {'value': '32',    'label': 'Corridors Active'},
+      {'value': '142', 'label': 'Countries Connected'},
+      {'value': '850K', 'label': 'Voices Shared'},
+      {'value': '32', 'label': 'Corridors Active'},
     ];
 
     return GridView.count(
@@ -422,7 +431,9 @@ class _ConnectScreenState extends State<ConnectScreen>
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
       childAspectRatio: isDesktop ? 1.6 : 1.3,
-      children: stats.map((s) => _buildStatCard(s['value']!, s['label']!)).toList(),
+      children: stats
+          .map((s) => _buildStatCard(s['value']!, s['label']!))
+          .toList(),
     );
   }
 
@@ -434,10 +445,10 @@ class _ConnectScreenState extends State<ConnectScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.8),
+            color: AppColors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.border.withOpacity(0.15),
+              color: AppColors.border.withValues(alpha: 0.15),
               width: 1,
             ),
           ),
@@ -501,21 +512,17 @@ class _ConnectScreenState extends State<ConnectScreen>
         child: Container(
           height: 480,
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.8),
+            color: AppColors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.border.withOpacity(0.15),
+              color: AppColors.border.withValues(alpha: 0.15),
               width: 1,
             ),
           ),
           child: Stack(
             children: [
               // Map Background
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _WorldMapPainter(),
-                ),
-              ),
+              Positioned.fill(child: CustomPaint(painter: _WorldMapPainter())),
 
               // Animated Hotspots
               ...(_hotspots.map((h) => _buildHotspot(h))),
@@ -569,7 +576,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                     _buildLegendItem(AppColors.primary, 'High Activity'),
                     const SizedBox(width: 20),
                     _buildLegendItem(
-                      AppColors.primary.withOpacity(0.35),
+                      AppColors.primary.withValues(alpha: 0.35),
                       'Connected',
                     ),
                   ],
@@ -591,7 +598,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                       color: AppColors.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.border.withOpacity(0.3),
+                        color: AppColors.border.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -640,7 +647,8 @@ class _ConnectScreenState extends State<ConnectScreen>
                   animation: _signalController,
                   builder: (context, _) {
                     final phase =
-                        (_signalController.value + (h['delay'] as double)) % 1.0;
+                        (_signalController.value + (h['delay'] as double)) %
+                        1.0;
                     final scale =
                         1.0 + 0.6 * math.sin(phase * 2 * math.pi).abs();
                     final opacity = (0.4 + 0.6 * (1 - phase)).clamp(0.2, 1.0);
@@ -656,7 +664,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                             color: AppColors.primary,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.5),
+                                color: AppColors.primary.withValues(alpha: 0.5),
                                 blurRadius: (h['size'] as double) * 2,
                                 spreadRadius: 2,
                               ),
@@ -704,10 +712,10 @@ class _ConnectScreenState extends State<ConnectScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.8),
+            color: AppColors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.border.withOpacity(0.15),
+              color: AppColors.border.withValues(alpha: 0.15),
               width: 1,
             ),
           ),
@@ -774,7 +782,9 @@ class _ConnectScreenState extends State<ConnectScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Color(insight['tagColor'] as int).withOpacity(0.12),
+                  color: Color(
+                    insight['tagColor'] as int,
+                  ).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -792,7 +802,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                 insight['readTime'] as String,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
-                  color: AppColors.onSurfaceMuted.withOpacity(0.6),
+                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
                   letterSpacing: 0.5,
                 ),
               ),
@@ -842,8 +852,13 @@ class _ConnectScreenState extends State<ConnectScreen>
                   color: AppColors.primary,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(
-                          0.5 * math.sin(_signalController.value * 2 * math.pi).abs()),
+                      color: AppColors.primary.withValues(
+                        alpha:
+                            0.5 *
+                            math
+                                .sin(_signalController.value * 2 * math.pi)
+                                .abs(),
+                      ),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -868,7 +883,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                 color: AppColors.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppColors.border.withOpacity(0.3),
+                  color: AppColors.border.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -920,10 +935,10 @@ class _ConnectScreenState extends State<ConnectScreen>
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainer.withOpacity(0.6),
+              color: AppColors.surfaceContainer.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: AppColors.border.withOpacity(0.12),
+                color: AppColors.border.withValues(alpha: 0.12),
                 width: 1,
               ),
             ),
@@ -945,10 +960,10 @@ class _ConnectScreenState extends State<ConnectScreen>
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.2),
+                          color: AppColors.primary.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -957,7 +972,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 8,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primary.withOpacity(0.7),
+                          color: AppColors.primary.withValues(alpha: 0.7),
                           letterSpacing: 1,
                         ),
                       ),
@@ -980,7 +995,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                       feature['desc'] as String,
                       style: GoogleFonts.inter(
                         fontSize: 11,
-                        color: AppColors.onSurfaceMuted.withOpacity(0.7),
+                        color: AppColors.onSurfaceMuted.withValues(alpha: 0.7),
                         height: 1.3,
                       ),
                     ),
@@ -1043,7 +1058,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                   borderRadius: BorderRadius.circular(14),
                 ),
                 elevation: 0,
-                shadowColor: AppColors.primary.withOpacity(0.4),
+                shadowColor: AppColors.primary.withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -1101,10 +1116,10 @@ class _ComingSoonDialogState extends State<_ComingSoonDialog>
                 constraints: const BoxConstraints(maxWidth: 380),
                 padding: const EdgeInsets.all(40),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainer.withOpacity(0.95),
+                  color: AppColors.surfaceContainer.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: AppColors.primary.withOpacity(0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -1117,9 +1132,9 @@ class _ComingSoonDialogState extends State<_ComingSoonDialog>
                       height: 72,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -1150,10 +1165,10 @@ class _ComingSoonDialogState extends State<_ComingSoonDialog>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.25),
+                          color: AppColors.primary.withValues(alpha: 0.25),
                           width: 1,
                         ),
                       ),
@@ -1244,17 +1259,15 @@ class _GridPainter extends CustomPainter {
     }
     // Radial gradient effect in center
     final gradPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          const Color(0x15F59E0B),
-          Colors.transparent,
-        ],
-      ).createShader(
-        Rect.fromCircle(
-          center: Offset(size.width / 2, size.height / 2),
-          radius: size.width * 0.5,
-        ),
-      );
+      ..shader =
+          RadialGradient(
+            colors: [const Color(0x15F59E0B), Colors.transparent],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(size.width / 2, size.height / 2),
+              radius: size.width * 0.5,
+            ),
+          );
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       size.width * 0.5,
@@ -1332,11 +1345,9 @@ class _WorldMapPainter extends CustomPainter {
     final y = cy * size.height;
     final hw = rw * size.width * 0.5;
     final hh = rh * size.height * 0.5;
-    path.addOval(Rect.fromCenter(
-      center: Offset(x, y),
-      width: hw * 2,
-      height: hh * 2,
-    ));
+    path.addOval(
+      Rect.fromCenter(center: Offset(x, y), width: hw * 2, height: hh * 2),
+    );
     return path;
   }
 
@@ -1358,10 +1369,14 @@ class _ConnectionLinePainter extends CustomPainter {
       ..strokeWidth = 0.8
       ..style = PaintingStyle.stroke;
 
-    final positions = hotspots.map((h) => Offset(
-          (h['x'] as double) * size.width,
-          (h['y'] as double) * size.height,
-        )).toList();
+    final positions = hotspots
+        .map(
+          (h) => Offset(
+            (h['x'] as double) * size.width,
+            (h['y'] as double) * size.height,
+          ),
+        )
+        .toList();
 
     // Draw faint connections between nearby nodes
     for (int i = 0; i < positions.length; i++) {
@@ -1369,8 +1384,11 @@ class _ConnectionLinePainter extends CustomPainter {
         final dist = (positions[i] - positions[j]).distance;
         if (dist < size.width * 0.35) {
           final phase = (progress + i * 0.15 + j * 0.1) % 1.0;
-          final opacity = (0.08 + 0.12 * math.sin(phase * math.pi)).clamp(0.0, 0.25);
-          paint.color = AppColors.primary.withOpacity(opacity);
+          final opacity = (0.08 + 0.12 * math.sin(phase * math.pi)).clamp(
+            0.0,
+            0.25,
+          );
+          paint.color = AppColors.primary.withValues(alpha: opacity);
           canvas.drawLine(positions[i], positions[j], paint);
         }
       }

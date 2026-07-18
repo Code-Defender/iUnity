@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
+import '../theme/app_theme.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -30,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -44,11 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email,
         password: password,
       );
-      
+
       if (mounted && userCredential != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Signal established as ${userCredential.user?.email}"),
+            content: Text(
+              "Signal established as ${userCredential.user?.email}",
+            ),
             backgroundColor: AppColors.primaryContainer,
           ),
         );
@@ -56,27 +57,31 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       bool isNotRegistered = false;
-      String friendlyErrorMessage = e.toString().replaceFirst("Exception: ", "");
+      String friendlyErrorMessage = e.toString().replaceFirst(
+        "Exception: ",
+        "",
+      );
 
       if (e is FirebaseAuthException) {
         if (e.code == 'user-not-found') {
           isNotRegistered = true;
         } else if (e.code == 'invalid-credential') {
           try {
-            final tempCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email,
-              password: 'TempPassword123!',
-            );
+            final tempCredential = await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+                  email: email,
+                  password: 'TempPassword123!',
+                );
             await tempCredential.user?.delete();
             isNotRegistered = true;
           } on FirebaseAuthException catch (signUpError) {
             if (signUpError.code == 'email-already-in-use') {
               isNotRegistered = false;
             } else {
-              print("Sign up check error: ${signUpError.code}");
+              debugPrint("Sign up check error: ${signUpError.code}");
             }
           } catch (signUpError) {
-            print("Sign up check error: $signUpError");
+            debugPrint("Sign up check error: $signUpError");
           }
         }
       } else {
@@ -85,10 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
           isNotRegistered = true;
         } else if (errString.contains('invalid-credential')) {
           try {
-            final tempCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email,
-              password: 'TempPassword123!',
-            );
+            final tempCredential = await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+                  email: email,
+                  password: 'TempPassword123!',
+                );
             await tempCredential.user?.delete();
             isNotRegistered = true;
           } on FirebaseAuthException catch (signUpError) {
@@ -103,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Account not created. Directing to registration..."),
+              content: Text(
+                "Account not created. Directing to registration...",
+              ),
               backgroundColor: Colors.redAccent,
             ),
           );
@@ -114,9 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        setState(() {
-          _errorMessage = friendlyErrorMessage;
-        });
+        if (mounted) {
+          setState(() {
+            _errorMessage = friendlyErrorMessage;
+          });
+        }
       }
     } finally {
       if (mounted) {
@@ -136,7 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.onSurface),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.onSurface,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -144,7 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 8.0,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 16.0,
@@ -159,12 +175,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         // Status Badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.08),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: AppColors.primary.withOpacity(0.2),
+                              color: AppColors.primary.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -210,7 +229,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Email Input Header
                               Text(
                                 "DRIVER EMAIL ADDRESS",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -218,13 +239,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: const InputDecoration(
                                   hintText: "driver@iunity.org",
-                                  prefixIcon: Icon(Icons.email_outlined, color: AppColors.onSurfaceMuted, size: 20),
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    color: AppColors.onSurfaceMuted,
+                                    size: 20,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return "Email address is required";
                                   }
-                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
+                                  if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value.trim())) {
                                     return "Please enter a valid email";
                                   }
                                   return null;
@@ -235,7 +262,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Password Input Header
                               Text(
                                 "SECRET AUTH KEY",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -243,7 +272,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 obscureText: true,
                                 decoration: const InputDecoration(
                                   hintText: "••••••••",
-                                  prefixIcon: Icon(Icons.lock_outline_rounded, color: AppColors.onSurfaceMuted, size: 20),
+                                  prefixIcon: Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: AppColors.onSurfaceMuted,
+                                    size: 20,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -264,14 +297,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () {
                                     final email = _emailController.text.trim();
                                     if (email.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("Enter your email above to request a reset link.")),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Enter your email above to request a reset link.",
+                                          ),
+                                        ),
                                       );
                                       return;
                                     }
-                                    _authService.sendPasswordResetEmail(email: email);
+                                    _authService.sendPasswordResetEmail(
+                                      email: email,
+                                    );
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("Reset signal sent to $email")),
+                                      SnackBar(
+                                        content: Text(
+                                          "Reset signal sent to $email",
+                                        ),
+                                      ),
                                     );
                                   },
                                   child: const Text("LOST CONNECTION?"),
@@ -282,23 +327,37 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_errorMessage != null) ...[
                                 const SizedBox(height: 10),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent.withOpacity(0.08),
+                                    color: Colors.redAccent.withValues(
+                                      alpha: 0.08,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                    border: Border.all(
+                                      color: Colors.redAccent.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 20),
+                                      const Icon(
+                                        Icons.error_outline_rounded,
+                                        color: Colors.redAccent,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           _errorMessage!,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: Colors.redAccent,
-                                            fontSize: 13,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: Colors.redAccent,
+                                                fontSize: 13,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -329,7 +388,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        AppColors.onPrimary,
+                                      ),
                                     ),
                                   )
                                 : Row(
@@ -337,14 +398,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       Text(
                                         "RE-ESTABLISH SIGNAL",
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: AppColors.onPrimary,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 1.0,
-                                        ),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.onPrimary,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 1.0,
+                                            ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Icon(Icons.radio_button_checked_rounded, size: 18),
+                                      const Icon(
+                                        Icons.radio_button_checked_rounded,
+                                        size: 18,
+                                      ),
                                     ],
                                   ),
                           ),

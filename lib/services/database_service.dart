@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -22,22 +23,26 @@ class DatabaseService {
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
-      print("Error saving user profile: $e");
+      debugPrint("Error saving user profile: $e");
       rethrow;
     }
   }
 
   // Get user profile data as a stream
-  Stream<DocumentSnapshot<Map<String, dynamic>>> getUserProfileStream(String uid) {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getUserProfileStream(
+    String uid,
+  ) {
     return _db.collection('users').doc(uid).snapshots();
   }
 
   // Get user profile once
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserProfile(String uid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserProfile(
+    String uid,
+  ) async {
     try {
       return await _db.collection('users').doc(uid).get();
     } catch (e) {
-      print("Error getting user profile: $e");
+      debugPrint("Error getting user profile: $e");
       rethrow;
     }
   }
@@ -51,7 +56,7 @@ class DatabaseService {
       data['createdAt'] = FieldValue.serverTimestamp();
       return await _db.collection(collectionPath).add(data);
     } catch (e) {
-      print("Error adding document to $collectionPath: $e");
+      debugPrint("Error adding document to $collectionPath: $e");
       rethrow;
     }
   }
@@ -66,7 +71,7 @@ class DatabaseService {
       data['updatedAt'] = FieldValue.serverTimestamp();
       await _db.collection(collectionPath).doc(docId).update(data);
     } catch (e) {
-      print("Error updating document $docId in $collectionPath: $e");
+      debugPrint("Error updating document $docId in $collectionPath: $e");
       rethrow;
     }
   }
@@ -79,7 +84,7 @@ class DatabaseService {
     try {
       await _db.collection(collectionPath).doc(docId).delete();
     } catch (e) {
-      print("Error deleting document $docId in $collectionPath: $e");
+      debugPrint("Error deleting document $docId in $collectionPath: $e");
       rethrow;
     }
   }
@@ -87,7 +92,8 @@ class DatabaseService {
   // Generic Query Stream
   Stream<QuerySnapshot<Map<String, dynamic>>> getCollectionStream({
     required String collectionPath,
-    Query<Map<String, dynamic>> Function(Query<Map<String, dynamic>> query)? queryBuilder,
+    Query<Map<String, dynamic>> Function(Query<Map<String, dynamic>> query)?
+    queryBuilder,
   }) {
     Query<Map<String, dynamic>> query = _db.collection(collectionPath);
     if (queryBuilder != null) {

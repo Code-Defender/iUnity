@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -14,13 +14,13 @@ class StorageService {
     try {
       Reference ref = _storage.ref().child(path);
       UploadTask uploadTask = ref.putFile(file, metadata);
-      
+
       // Monitor upload task if needed
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      print("Error uploading file to path $path: $e");
+      debugPrint("Error uploading file to path $path: $e");
       rethrow;
     }
   }
@@ -34,12 +34,12 @@ class StorageService {
     try {
       Reference ref = _storage.ref().child(path);
       UploadTask uploadTask = ref.putData(bytes, metadata);
-      
+
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      print("Error uploading bytes to path $path: $e");
+      debugPrint("Error uploading bytes to path $path: $e");
       rethrow;
     }
   }
@@ -50,7 +50,7 @@ class StorageService {
       Reference ref = _storage.ref().child(path);
       await ref.delete();
     } catch (e) {
-      print("Error deleting file at path $path: $e");
+      debugPrint("Error deleting file at path $path: $e");
       rethrow;
     }
   }
@@ -61,7 +61,7 @@ class StorageService {
       Reference ref = _storage.ref().child(path);
       return await ref.getDownloadURL();
     } catch (e) {
-      print("Error getting download URL for path $path: $e");
+      debugPrint("Error getting download URL for path $path: $e");
       rethrow;
     }
   }

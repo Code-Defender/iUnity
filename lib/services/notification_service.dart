@@ -1,12 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 // Top-level background message handler.
 // This must be a top-level function (not inside any class) to run when the app is in the background or terminated.
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
   if (message.notification != null) {
-    print("Background Notification Title: ${message.notification!.title}");
-    print("Background Notification Body: ${message.notification!.body}");
+    debugPrint("Background Notification Title: ${message.notification!.title}");
+    debugPrint("Background Notification Body: ${message.notification!.body}");
   }
 }
 
@@ -23,33 +24,39 @@ class NotificationService {
       sound: true,
     );
 
-    print('User granted notification permission: ${settings.authorizationStatus}');
+    debugPrint(
+      'User granted notification permission: ${settings.authorizationStatus}',
+    );
 
     // 2. Register Background Handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // 3. Listen to Foreground Messages (When app is active and in view)
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message in the foreground!');
+      debugPrint('Got a message in the foreground!');
       if (message.notification != null) {
-        print('Foreground Notification Title: ${message.notification!.title}');
-        print('Foreground Notification Body: ${message.notification!.body}');
+        debugPrint(
+          'Foreground Notification Title: ${message.notification!.title}',
+        );
+        debugPrint(
+          'Foreground Notification Body: ${message.notification!.body}',
+        );
       }
-      
-      // Note: If you want to show a popup or local notification alert in the foreground 
+
+      // Note: If you want to show a popup or local notification alert in the foreground
       // on Android, you would typically trigger package 'flutter_local_notifications' here.
     });
 
     // 4. Handle Notification click when app is opened from a background state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
+      debugPrint('A new onMessageOpenedApp event was published!');
       // Navigate to a specific screen based on notification data
     });
 
     // 5. Handle Notification click when app is opened from a terminated state
     RemoteMessage? initialMessage = await _fcm.getInitialMessage();
     if (initialMessage != null) {
-      print('App opened from terminated state via notification!');
+      debugPrint('App opened from terminated state via notification!');
       // Navigate to a specific screen based on notification data
     }
   }
@@ -58,10 +65,10 @@ class NotificationService {
   Future<String?> getFCMToken() async {
     try {
       String? token = await _fcm.getToken();
-      print("FCM Token: $token");
+      debugPrint("FCM Token: $token");
       return token;
     } catch (e) {
-      print("Error getting FCM Token: $e");
+      debugPrint("Error getting FCM Token: $e");
       return null;
     }
   }

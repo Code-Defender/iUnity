@@ -18,10 +18,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   String _selectedRole = "DRIVER"; // "DRIVER", "OWNER", or "BOTH"
@@ -45,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -56,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      
+
       if (userCredential != null && userCredential.user != null) {
         // Save user profile details to database
         await _databaseService.saveUserProfile(
@@ -65,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           displayName: _nameController.text.trim(),
           role: _selectedRole,
         );
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -78,9 +78,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst("Exception: ", "");
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst("Exception: ", "");
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -92,9 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _navigateToLogin() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 
@@ -107,7 +107,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.onSurface),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.onSurface,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -115,7 +118,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 8.0,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 16.0,
@@ -130,12 +136,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         // Status Badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.08),
+                            color: AppColors.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: AppColors.primary.withOpacity(0.2),
+                              color: AppColors.primary.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -181,7 +190,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // Full Name
                               Text(
                                 "FULL NAME",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -189,7 +200,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 keyboardType: TextInputType.name,
                                 decoration: const InputDecoration(
                                   hintText: "John Doe",
-                                  prefixIcon: Icon(Icons.person_outline_rounded, color: AppColors.onSurfaceMuted, size: 20),
+                                  prefixIcon: Icon(
+                                    Icons.person_outline_rounded,
+                                    color: AppColors.onSurfaceMuted,
+                                    size: 20,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -203,7 +218,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // Email Input
                               Text(
                                 "DRIVER EMAIL ADDRESS",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -211,13 +228,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: const InputDecoration(
                                   hintText: "driver@iunity.org",
-                                  prefixIcon: Icon(Icons.email_outlined, color: AppColors.onSurfaceMuted, size: 20),
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    color: AppColors.onSurfaceMuted,
+                                    size: 20,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return "Email address is required";
                                   }
-                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
+                                  if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value.trim())) {
                                     return "Please enter a valid email";
                                   }
                                   return null;
@@ -228,7 +251,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // Password Input
                               Text(
                                 "SECRET AUTH KEY",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -236,10 +261,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 obscureText: _obscurePassword,
                                 decoration: InputDecoration(
                                   hintText: "••••••••",
-                                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.onSurfaceMuted, size: 20),
+                                  prefixIcon: const Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: AppColors.onSurfaceMuted,
+                                    size: 20,
+                                  ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                      _obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
                                       color: AppColors.onSurfaceMuted,
                                       size: 20,
                                     ),
@@ -265,7 +296,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // Identity Declaration Title
                               Text(
                                 "IDENTITY DECLARATION",
-                                style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                               const SizedBox(height: 12),
 
@@ -273,15 +306,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _buildRoleCard("DRIVER", Icons.person_outline_rounded),
+                                    child: _buildRoleCard(
+                                      "DRIVER",
+                                      Icons.person_outline_rounded,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: _buildRoleCard("OWNER", Icons.local_shipping_outlined),
+                                    child: _buildRoleCard(
+                                      "OWNER",
+                                      Icons.local_shipping_outlined,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: _buildRoleCard("BOTH", Icons.handshake_outlined),
+                                    child: _buildRoleCard(
+                                      "BOTH",
+                                      Icons.handshake_outlined,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -290,23 +332,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (_errorMessage != null) ...[
                                 const SizedBox(height: 20),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent.withOpacity(0.08),
+                                    color: Colors.redAccent.withValues(
+                                      alpha: 0.08,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                    border: Border.all(
+                                      color: Colors.redAccent.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 20),
+                                      const Icon(
+                                        Icons.error_outline_rounded,
+                                        color: Colors.redAccent,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           _errorMessage!,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: Colors.redAccent,
-                                            fontSize: 13,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: Colors.redAccent,
+                                                fontSize: 13,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -337,7 +393,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        AppColors.onPrimary,
+                                      ),
                                     ),
                                   )
                                 : Row(
@@ -345,14 +403,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     children: [
                                       Text(
                                         "BEGIN THE DECLARATION",
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: AppColors.onPrimary,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 1.0,
-                                        ),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.onPrimary,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 1.0,
+                                            ),
                                       ),
                                       const SizedBox(width: 10),
-                                      const Icon(Icons.arrow_forward_rounded, size: 18),
+                                      const Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 18,
+                                      ),
                                     ],
                                   ),
                           ),
@@ -409,7 +471,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.08) : AppColors.surfaceContainerLow,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : AppColors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
@@ -420,7 +484,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted.withOpacity(0.6),
+              color: isSelected
+                  ? AppColors.primary
+                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
               size: 24,
             ),
             const SizedBox(height: 8),
@@ -429,7 +495,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted,
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.onSurfaceMuted,
                 letterSpacing: 1.0,
               ),
             ),

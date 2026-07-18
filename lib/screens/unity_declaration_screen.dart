@@ -1,10 +1,12 @@
 import 'dart:ui';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../theme/app_theme.dart';
+
 import '../services/auth_service.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
 
 class UnityDeclarationScreen extends StatefulWidget {
   const UnityDeclarationScreen({super.key});
@@ -19,7 +21,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
   final DatabaseService _databaseService = DatabaseService();
 
   // ── Form State ────────────────────────────────────────────────────────────
-  String _selectedRole = '';          // 'OWNER' | 'DRIVER' | 'BOTH'
+  String _selectedRole = ''; // 'OWNER' | 'DRIVER' | 'BOTH'
   String _selectedCountry = 'United States';
   String _selectedLanguage = 'English';
   final TextEditingController _corridorController = TextEditingController();
@@ -41,21 +43,41 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
 
   // ── Static Data ───────────────────────────────────────────────────────────
   final List<String> _countries = [
-    'United States', 'Canada', 'Mexico', 'European Union', 'Global Corridor',
+    'United States',
+    'Canada',
+    'Mexico',
+    'European Union',
+    'Global Corridor',
   ];
-  final List<String> _languages = [
-    'English', 'Spanish', 'French', 'Punjabi',
-  ];
+  final List<String> _languages = ['English', 'Spanish', 'French', 'Punjabi'];
   final List<Map<String, dynamic>> _roles = [
-    {'key': 'OWNER',  'label': 'Owner',  'icon': Icons.business_center_rounded,  'desc': 'Fleet or independent owner-operator'},
-    {'key': 'DRIVER', 'label': 'Driver', 'icon': Icons.local_shipping_rounded,   'desc': 'Professional long-haul driver'},
-    {'key': 'BOTH',   'label': 'Both',   'icon': Icons.handshake_rounded,         'desc': 'Owner who also drives'},
+    {
+      'key': 'OWNER',
+      'label': 'Owner',
+      'icon': Icons.business_center_rounded,
+      'desc': 'Fleet or independent owner-operator',
+    },
+    {
+      'key': 'DRIVER',
+      'label': 'Driver',
+      'icon': Icons.local_shipping_rounded,
+      'desc': 'Professional long-haul driver',
+    },
+    {
+      'key': 'BOTH',
+      'label': 'Both',
+      'icon': Icons.handshake_rounded,
+      'desc': 'Owner who also drives',
+    },
   ];
   final List<Map<String, dynamic>> _benefits = [
-    {'icon': Icons.gavel_rounded,          'label': 'Collective Bargaining Identity'},
-    {'icon': Icons.public_rounded,         'label': 'Infrastructure Sovereignty'},
-    {'icon': Icons.movie_filter_rounded,   'label': 'Cinematic Driver Visibility'},
-    {'icon': Icons.hub_rounded,            'label': 'Network Intelligence Access'},
+    {'icon': Icons.gavel_rounded, 'label': 'Collective Bargaining Identity'},
+    {'icon': Icons.public_rounded, 'label': 'Infrastructure Sovereignty'},
+    {
+      'icon': Icons.movie_filter_rounded,
+      'label': 'Cinematic Driver Visibility',
+    },
+    {'icon': Icons.hub_rounded, 'label': 'Network Intelligence Access'},
   ];
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -64,20 +86,29 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
     super.initState();
 
     _pulseController = AnimationController(
-      vsync: this, duration: const Duration(seconds: 2),
+      vsync: this,
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
     _pulseAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     _successController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 700),
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
     );
-    _successScale = CurvedAnimation(parent: _successController, curve: Curves.elasticOut);
-    _successFade  = CurvedAnimation(parent: _successController, curve: Curves.easeIn);
+    _successScale = CurvedAnimation(
+      parent: _successController,
+      curve: Curves.elasticOut,
+    );
+    _successFade = CurvedAnimation(
+      parent: _successController,
+      curve: Curves.easeIn,
+    );
 
     _fadeInController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 600),
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
     )..forward();
     _fadeIn = CurvedAnimation(parent: _fadeInController, curve: Curves.easeOut);
 
@@ -106,12 +137,14 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
       if (doc.exists) {
         final data = doc.data();
         if (data != null && data['declaredUnity'] == true) {
-          setState(() {
-            _alreadyDeclared = true;
-            _selectedRole = data['role'] ?? 'DRIVER';
-            _showSuccess = true;
-          });
-          _successController.forward();
+          if (mounted) {
+            setState(() {
+              _alreadyDeclared = true;
+              _selectedRole = data['role'] ?? 'DRIVER';
+              _showSuccess = true;
+            });
+            _successController.forward();
+          }
         }
       }
     } catch (_) {}
@@ -152,14 +185,15 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           .collection('users')
           .doc(user.uid)
           .set({
-        'declaredUnity': true,
-        'declarationRole': _selectedRole,
-        'declarationCountry': _selectedCountry,
-        'declarationLanguage': _selectedLanguage,
-        'declarationCorridor': _corridorController.text.trim(),
-        'declarationChapter': _chapterController.text.trim(),
-        'declaredAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)).timeout(const Duration(seconds: 8));
+            'declaredUnity': true,
+            'declarationRole': _selectedRole,
+            'declarationCountry': _selectedCountry,
+            'declarationLanguage': _selectedLanguage,
+            'declarationCorridor': _corridorController.text.trim(),
+            'declarationChapter': _chapterController.text.trim(),
+            'declaredAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true))
+          .timeout(const Duration(seconds: 8));
 
       if (mounted) {
         setState(() {
@@ -249,7 +283,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           center: Alignment.center,
           radius: 1.2,
           colors: [
-            AppColors.primary.withOpacity(0.06),
+            AppColors.primary.withValues(alpha: 0.06),
             Colors.transparent,
           ],
         ),
@@ -309,10 +343,15 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.surfaceContainerLow,
-            border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.35 * _pulseAnimation.value),
+                color: AppColors.primary.withValues(
+                  alpha: 0.35 * _pulseAnimation.value,
+                ),
                 blurRadius: 28,
                 spreadRadius: 6,
               ),
@@ -341,9 +380,12 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
             child: Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainer.withOpacity(0.8),
+                color: AppColors.surfaceContainer.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border.withOpacity(0.15), width: 1),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.15),
+                  width: 1,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +403,9 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                             color: AppColors.primary,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.7 * _pulseAnimation.value),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.7 * _pulseAnimation.value,
+                                ),
                                 blurRadius: 12,
                                 spreadRadius: 3,
                               ),
@@ -393,24 +437,32 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                   const SizedBox(height: 24),
 
                   // Benefits List
-                  ...(_benefits.map((b) => Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: Row(
-                      children: [
-                        Icon(b['icon'] as IconData, color: AppColors.primary, size: 18),
-                        const SizedBox(width: 12),
-                        Text(
-                          b['label'] as String,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.onSurface,
-                            letterSpacing: 0.5,
+                  ...(_benefits.map(
+                    (b) => Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Row(
+                        children: [
+                          Icon(
+                            b['icon'] as IconData,
+                            color: AppColors.primary,
+                            size: 18,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              b['label'] as String,
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.onSurface,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ))),
+                  )),
                 ],
               ),
             ),
@@ -436,10 +488,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF1C2532),
-                        Color(0xFF0D1520),
-                      ],
+                      colors: [Color(0xFF1C2532), Color(0xFF0D1520)],
                     ),
                   ),
                 ),
@@ -447,7 +496,9 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                 CustomPaint(painter: _TruckScenePainter()),
                 // Bottom gradient overlay
                 Positioned(
-                  bottom: 0, left: 0, right: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
@@ -455,7 +506,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          AppColors.background.withOpacity(0.85),
+                          AppColors.background.withValues(alpha: 0.85),
                           Colors.transparent,
                         ],
                       ),
@@ -464,12 +515,13 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                 ),
                 // Caption
                 Positioned(
-                  bottom: 16, left: 20,
+                  bottom: 16,
+                  left: 20,
                   child: Text(
                     'THE ROAD NEVER ENDS',
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 10,
-                      color: AppColors.primary.withOpacity(0.8),
+                      color: AppColors.primary.withValues(alpha: 0.8),
                       letterSpacing: 2,
                     ),
                   ),
@@ -503,9 +555,12 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.6),
+            color: AppColors.surfaceContainer.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border.withOpacity(0.1), width: 1),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.1),
+              width: 1,
+            ),
           ),
           child: Column(
             children: [
@@ -543,15 +598,15 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
         child: Container(
           padding: const EdgeInsets.all(36),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.8),
+            color: AppColors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.18),
+              color: AppColors.primary.withValues(alpha: 0.18),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -608,7 +663,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                 textAlign: TextAlign.center,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
-                  color: AppColors.onSurfaceMuted.withOpacity(0.5),
+                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.5),
                   letterSpacing: 1.2,
                 ),
               ),
@@ -625,7 +680,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.12),
+            color: AppColors.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
@@ -664,29 +719,38 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
               onTap: () => setState(() => _selectedRole = key),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.border.withOpacity(0.5),
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.border.withValues(alpha: 0.5),
                     width: isSelected ? 1.5 : 1,
                   ),
                   boxShadow: isSelected
-                      ? [BoxShadow(
-                          color: AppColors.primary.withOpacity(0.2),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        )]
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
                       : null,
                 ),
                 child: Column(
                   children: [
                     Icon(
                       role['icon'] as IconData,
-                      color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.onSurfaceMuted,
                       size: 28,
                     ),
                     const SizedBox(height: 10),
@@ -694,8 +758,12 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                       role['label'] as String,
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 11,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.onSurfaceMuted,
                         letterSpacing: 1,
                       ),
                     ),
@@ -705,7 +773,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 10,
-                        color: AppColors.onSurfaceMuted.withOpacity(0.6),
+                        color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
                         height: 1.4,
                       ),
                     ),
@@ -786,7 +854,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
       style: GoogleFonts.jetBrainsMono(
         fontSize: 10,
         fontWeight: FontWeight.w500,
-        color: AppColors.onSurfaceMuted.withOpacity(0.7),
+        color: AppColors.onSurfaceMuted.withValues(alpha: 0.7),
         letterSpacing: 1.2,
       ),
     );
@@ -798,13 +866,20 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
     required ValueChanged<String?> onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       onChanged: onChanged,
       dropdownColor: AppColors.surfaceContainerHigh,
       style: GoogleFonts.inter(fontSize: 14, color: AppColors.onSurface),
-      icon: const Icon(Icons.expand_more_rounded, color: AppColors.onSurfaceMuted, size: 20),
+      icon: const Icon(
+        Icons.expand_more_rounded,
+        color: AppColors.onSurfaceMuted,
+        size: 20,
+      ),
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         filled: true,
         fillColor: AppColors.surfaceContainerHighest,
         border: OutlineInputBorder(
@@ -820,10 +895,14 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item, style: GoogleFonts.inter(fontSize: 13)),
-      )).toList(),
+      items: items
+          .map(
+            (item) => DropdownMenuItem(
+              value: item,
+              child: Text(item, style: GoogleFonts.inter(fontSize: 13)),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -836,12 +915,15 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
       style: GoogleFonts.inter(fontSize: 14, color: AppColors.onSurface),
       decoration: InputDecoration(
         hintText: hint,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         filled: true,
         fillColor: AppColors.surfaceContainerHighest,
         hintStyle: GoogleFonts.inter(
           fontSize: 13,
-          color: AppColors.onSurfaceMuted.withOpacity(0.5),
+          color: AppColors.onSurfaceMuted.withValues(alpha: 0.5),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -868,10 +950,12 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: const Color(0xFF1A0F00),
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          shadowColor: AppColors.primary.withOpacity(0.4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          shadowColor: AppColors.primary.withValues(alpha: 0.4),
         ),
         child: _isSubmitting
             ? const SizedBox(
@@ -910,7 +994,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           'iUnity © 2020',
           style: GoogleFonts.jetBrainsMono(
             fontSize: 10,
-            color: AppColors.onSurfaceMuted.withOpacity(0.4),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.4),
             letterSpacing: 2,
           ),
         ),
@@ -920,7 +1004,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
           style: GoogleFonts.inter(
             fontSize: 13,
             fontStyle: FontStyle.italic,
-            color: AppColors.onSurfaceMuted.withOpacity(0.4),
+            color: AppColors.onSurfaceMuted.withValues(alpha: 0.4),
           ),
         ),
       ],
@@ -945,10 +1029,10 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                     width: isDesktop ? 520 : double.infinity,
                     padding: const EdgeInsets.all(48),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainer.withOpacity(0.8),
+                      color: AppColors.surfaceContainer.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: AppColors.primary.withOpacity(0.25),
+                        color: AppColors.primary.withValues(alpha: 0.25),
                         width: 1.5,
                       ),
                     ),
@@ -963,15 +1047,16 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                             height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.primary.withOpacity(0.08),
+                              color: AppColors.primary.withValues(alpha: 0.08),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary
-                                      .withOpacity(0.3 * _pulseAnimation.value),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3 * _pulseAnimation.value,
+                                  ),
                                   blurRadius: 32,
                                   spreadRadius: 8,
                                 ),
@@ -1019,13 +1104,14 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                         if (_selectedRole.isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10,
+                              horizontal: 20,
+                              vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(40),
                               border: Border.all(
-                                color: AppColors.primary.withOpacity(0.4),
+                                color: AppColors.primary.withValues(alpha: 0.4),
                                 width: 1,
                               ),
                             ),
@@ -1060,7 +1146,9 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                             'YOU HAVE ALREADY DECLARED UNITY',
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 9,
-                              color: AppColors.onSurfaceMuted.withOpacity(0.4),
+                              color: AppColors.onSurfaceMuted.withValues(
+                                alpha: 0.4,
+                              ),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -1077,7 +1165,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
                               'RETURN TO DECLARATION',
                               style: GoogleFonts.jetBrainsMono(
                                 fontSize: 10,
-                                color: AppColors.primary.withOpacity(0.6),
+                                color: AppColors.primary.withValues(alpha: 0.6),
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -1126,7 +1214,7 @@ class _UnityDeclarationScreenState extends State<UnityDeclarationScreen>
       width: 1,
       height: 36,
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      color: AppColors.border.withOpacity(0.3),
+      color: AppColors.border.withValues(alpha: 0.3),
     );
   }
 }
@@ -1190,8 +1278,12 @@ class _TruckScenePainter extends CustomPainter {
     final cabPaint = Paint()..color = const Color(0xFF3A4A70);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromLTWH(truckX + truckW * 0.72, truckY + truckH * 0.2,
-            truckW * 0.28, truckH * 0.8),
+        Rect.fromLTWH(
+          truckX + truckW * 0.72,
+          truckY + truckH * 0.2,
+          truckW * 0.28,
+          truckH * 0.8,
+        ),
         const Radius.circular(4),
       ),
       cabPaint,

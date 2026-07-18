@@ -1,10 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,10 +15,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
-  
+
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  
+
   bool _isEditing = false;
   bool _isSaving = false;
   bool _initialized = false;
@@ -65,9 +64,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = "Failed to update profile: $e";
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = "Failed to update profile: $e";
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -122,7 +123,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline_rounded, color: AppColors.primary, size: 48),
+              const Icon(
+                Icons.error_outline_rounded,
+                color: AppColors.primary,
+                size: 48,
+              ),
               const SizedBox(height: 16),
               Text(
                 "NO SIGNAL DETECTED",
@@ -150,7 +155,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.onSurface),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.onSurface,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -164,14 +172,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             }
 
-            if (snapshot.connectionState == ConnectionState.waiting && !_initialized) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !_initialized) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               );
             }
 
             final data = snapshot.data?.data() ?? {};
-            
+
             // Initialize controllers once data is available
             if (!_initialized) {
               _nameController.text = data['displayName'] ?? '';
@@ -187,11 +196,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             String createdStr = "SECURE MEMBER";
             if (data['createdAt'] != null && data['createdAt'] is Timestamp) {
               final date = (data['createdAt'] as Timestamp).toDate();
-              createdStr = "COMMISSIONED // ${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
+              createdStr =
+                  "COMMISSIONED // ${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 8.0,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -199,12 +212,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     // Header Title
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.2),
+                          color: AppColors.primary.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -256,13 +272,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      AppColors.primaryContainer.withOpacity(0.4),
+                                      AppColors.primaryContainer.withValues(
+                                        alpha: 0.4,
+                                      ),
                                       AppColors.background,
                                     ],
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.1),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       blurRadius: 16,
                                       spreadRadius: 2,
                                     ),
@@ -300,7 +320,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             createdStr.toUpperCase(),
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 11,
-                              color: AppColors.onSurfaceMuted.withOpacity(0.7),
+                              color: AppColors.onSurfaceMuted.withValues(
+                                alpha: 0.7,
+                              ),
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -318,16 +340,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           // Display Name field
                           Text(
                             "DRIVER IDENTIFICATION (DISPLAY NAME)",
-                            style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           if (_isEditing)
                             TextFormField(
                               controller: _nameController,
-                              style: const TextStyle(color: AppColors.onSurface),
+                              style: const TextStyle(
+                                color: AppColors.onSurface,
+                              ),
                               decoration: const InputDecoration(
                                 hintText: "Enter full name",
-                                prefixIcon: Icon(Icons.badge_outlined, color: AppColors.onSurfaceMuted, size: 20),
+                                prefixIcon: Icon(
+                                  Icons.badge_outlined,
+                                  color: AppColors.onSurfaceMuted,
+                                  size: 20,
+                                ),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -340,7 +370,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _buildInfoFieldContainer(
                               context: context,
                               icon: Icons.badge_outlined,
-                              text: displayName.isEmpty ? "Not declared" : displayName,
+                              text: displayName.isEmpty
+                                  ? "Not declared"
+                                  : displayName,
                               isPlaceholder: displayName.isEmpty,
                             ),
                           const SizedBox(height: 24),
@@ -348,7 +380,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           // Email field (Always read-only)
                           Text(
                             "NETWORK FREQUENCY (EMAIL ADDRESS)",
-                            style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           _buildInfoFieldContainer(
@@ -362,17 +396,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           // Identity Role selection
                           Text(
                             "UNITY SPECIFICATION (ROLE)",
-                            style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           if (_isEditing)
                             Row(
                               children: [
-                                Expanded(child: _buildRoleSelectButton("DRIVER", Icons.person_outline_rounded)),
+                                Expanded(
+                                  child: _buildRoleSelectButton(
+                                    "DRIVER",
+                                    Icons.person_outline_rounded,
+                                  ),
+                                ),
                                 const SizedBox(width: 8),
-                                Expanded(child: _buildRoleSelectButton("OWNER", Icons.local_shipping_outlined)),
+                                Expanded(
+                                  child: _buildRoleSelectButton(
+                                    "OWNER",
+                                    Icons.local_shipping_outlined,
+                                  ),
+                                ),
                                 const SizedBox(width: 8),
-                                Expanded(child: _buildRoleSelectButton("BOTH", Icons.handshake_outlined)),
+                                Expanded(
+                                  child: _buildRoleSelectButton(
+                                    "BOTH",
+                                    Icons.handshake_outlined,
+                                  ),
+                                ),
                               ],
                             )
                           else
@@ -381,28 +432,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: _getRoleIcon(role),
                               text: role,
                             ),
-                          
+
                           // Error Display
                           if (_errorMessage != null) ...[
                             const SizedBox(height: 20),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.redAccent.withOpacity(0.08),
+                                color: Colors.redAccent.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                border: Border.all(
+                                  color: Colors.redAccent.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 20),
+                                  const Icon(
+                                    Icons.error_outline_rounded,
+                                    color: Colors.redAccent,
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       _errorMessage!,
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.redAccent,
-                                        fontSize: 13,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.redAccent,
+                                            fontSize: 13,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -428,22 +491,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: SizedBox(
                                   height: 52,
                                   child: OutlinedButton(
-                                    onPressed: _isSaving ? null : () {
-                                      setState(() {
-                                        _nameController.text = displayName;
-                                        _selectedRole = role;
-                                        _isEditing = false;
-                                        _errorMessage = null;
-                                      });
-                                    },
+                                    onPressed: _isSaving
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              _nameController.text =
+                                                  displayName;
+                                              _selectedRole = role;
+                                              _isEditing = false;
+                                              _errorMessage = null;
+                                            });
+                                          },
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.onSurface,
-                                      side: const BorderSide(color: AppColors.border, width: 1.5),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      side: const BorderSide(
+                                        color: AppColors.border,
+                                        width: 1.5,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
                                     child: Text(
                                       "CANCEL",
-                                      style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.0,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -453,19 +527,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: SizedBox(
                                   height: 52,
                                   child: ElevatedButton(
-                                    onPressed: _isSaving ? null : () => _saveProfile(user.uid, email),
+                                    onPressed: _isSaving
+                                        ? null
+                                        : () => _saveProfile(user.uid, email),
                                     child: _isSaving
                                         ? const SizedBox(
                                             height: 20,
                                             width: 20,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    AppColors.onPrimary,
+                                                  ),
                                             ),
                                           )
                                         : Text(
                                             "SAVE CHANGES",
-                                            style: GoogleFonts.inter(fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                                            style: GoogleFonts.inter(
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.0,
+                                            ),
                                           ),
                                   ),
                                 ),
@@ -505,8 +587,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onPressed: _handleLogout,
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.redAccent,
-                                side: const BorderSide(color: Colors.redAccent, width: 1.5),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                side: const BorderSide(
+                                  color: Colors.redAccent,
+                                  width: 1.5,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -549,10 +636,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: isReadOnly ? AppColors.surfaceContainerLowest : AppColors.surfaceContainerLow,
+        color: isReadOnly
+            ? AppColors.surfaceContainerLowest
+            : AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.border.withOpacity(0.5),
+          color: AppColors.border.withValues(alpha: 0.5),
           width: 1,
         ),
       ),
@@ -560,7 +649,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(
             icon,
-            color: isReadOnly ? AppColors.onSurfaceMuted.withOpacity(0.4) : AppColors.onSurfaceMuted.withOpacity(0.8),
+            color: isReadOnly
+                ? AppColors.onSurfaceMuted.withValues(alpha: 0.4)
+                : AppColors.onSurfaceMuted.withValues(alpha: 0.8),
             size: 20,
           ),
           const SizedBox(width: 16),
@@ -568,13 +659,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isReadOnly
-                        ? AppColors.onSurfaceMuted.withOpacity(0.5)
-                        : isPlaceholder
-                            ? AppColors.onSurfaceMuted.withOpacity(0.4)
-                            : AppColors.onSurface,
-                    fontWeight: isReadOnly ? FontWeight.normal : FontWeight.w500,
-                  ),
+                color: isReadOnly
+                    ? AppColors.onSurfaceMuted.withValues(alpha: 0.5)
+                    : isPlaceholder
+                    ? AppColors.onSurfaceMuted.withValues(alpha: 0.4)
+                    : AppColors.onSurface,
+                fontWeight: isReadOnly ? FontWeight.normal : FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -606,7 +697,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.08) : AppColors.surfaceContainerLow,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : AppColors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
@@ -617,7 +710,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted.withOpacity(0.6),
+              color: isSelected
+                  ? AppColors.primary
+                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
               size: 22,
             ),
             const SizedBox(height: 8),
@@ -626,7 +721,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.onSurfaceMuted,
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.onSurfaceMuted,
                 letterSpacing: 1.0,
               ),
             ),

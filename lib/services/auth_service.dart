@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,16 +16,14 @@ class AuthService {
     required String password,
   }) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       _handleAuthException(e);
       rethrow;
     } catch (e) {
-      print("Sign Up Error: $e");
+      debugPrint("Sign Up Error: $e");
       rethrow;
     }
   }
@@ -44,7 +43,7 @@ class AuthService {
       _handleAuthException(e);
       rethrow;
     } catch (e) {
-      print("Sign In Error: $e");
+      debugPrint("Sign In Error: $e");
       rethrow;
     }
   }
@@ -57,7 +56,7 @@ class AuthService {
       _handleAuthException(e);
       rethrow;
     } catch (e) {
-      print("Password Reset Error: $e");
+      debugPrint("Password Reset Error: $e");
       rethrow;
     }
   }
@@ -67,7 +66,7 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      print("Sign Out Error: $e");
+      debugPrint("Sign Out Error: $e");
       rethrow;
     }
   }
@@ -76,25 +75,25 @@ class AuthService {
   void _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'weak-password':
-        print('The password provided is too weak.');
+        debugPrint('The password provided is too weak.');
         break;
       case 'email-already-in-use':
-        print('The account already exists for that email.');
+        debugPrint('The account already exists for that email.');
         break;
       case 'invalid-email':
-        print('The email address is not valid.');
+        debugPrint('The email address is not valid.');
         break;
       case 'user-not-found':
-        print('No user found for that email.');
+        debugPrint('No user found for that email.');
         break;
       case 'wrong-password':
-        print('Wrong password provided.');
+        debugPrint('Wrong password provided.');
         break;
       case 'user-disabled':
-        print('This user has been disabled.');
+        debugPrint('This user has been disabled.');
         break;
       default:
-        print('Auth Exception (${e.code}): ${e.message}');
+        debugPrint('Auth Exception (${e.code}): ${e.message}');
     }
   }
 }

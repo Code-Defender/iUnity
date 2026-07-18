@@ -6,23 +6,23 @@ class AppColors {
   static const Color background = Color(0xFF121212);
   static const Color primary = Color(0xFFF59E0B); // Unity Amber
   static const Color primaryContainer = Color(0xFF613B00);
-  
+
   static const Color surface = Color(0xFF131313);
   static const Color surfaceContainerLow = Color(0xFF1C1B1B);
   static const Color surfaceContainer = Color(0xFF201F1F);
   static const Color surfaceContainerHigh = Color(0xFF2A2A2A);
   static const Color surfaceContainerHighest = Color(0xFF353534);
   static const Color surfaceContainerLowest = Color(0xFF0E0E0E);
-  
+
   static const Color onSurface = Color(0xFFE5E2E1); // Warm White
   static const Color onSurfaceMuted = Color(0xFFD8C3AD); // Soft Gray/Cream
   static const Color onPrimary = Color(0xFF121212); // Near Black
-  
+
   static const Color border = Color(0xFF374151); // Steel Gray
   static const Color borderGlow = Color(0xFFF59E0B);
-  
+
   static const Color secondary = Color(0xFFBDC7DB); // Muted Steel Blue
-  static const Color tertiary = Color(0xFF8FD5FF);  // Muted Sky Blue
+  static const Color tertiary = Color(0xFF8FD5FF); // Muted Sky Blue
 }
 
 class AppTheme {
@@ -84,8 +84,13 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
         labelStyle: GoogleFonts.inter(color: AppColors.onSurfaceMuted),
-        hintStyle: GoogleFonts.inter(color: AppColors.onSurfaceMuted.withOpacity(0.5)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        hintStyle: GoogleFonts.inter(
+          color: AppColors.onSurfaceMuted.withValues(alpha: 0.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.border, width: 1),
@@ -109,9 +114,7 @@ class AppTheme {
           foregroundColor: AppColors.onPrimary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -155,10 +158,12 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding ?? const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainer.withOpacity(0.8), // 80% opacity
+            color: AppColors.surfaceContainer.withValues(
+              alpha: 0.8,
+            ), // 80% opacity
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: AppColors.border.withOpacity(borderOpacity),
+              color: AppColors.border.withValues(alpha: borderOpacity),
               width: 1.0,
             ),
           ),
@@ -173,10 +178,7 @@ class GlassCard extends StatelessWidget {
 class UnitySignal extends StatefulWidget {
   final double size;
 
-  const UnitySignal({
-    super.key,
-    this.size = 12.0,
-  });
+  const UnitySignal({super.key, this.size = 12.0});
 
   @override
   State<UnitySignal> createState() => _UnitySignalState();
@@ -194,10 +196,11 @@ class _UnitySignalState extends State<UnitySignal>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
-    _animation = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -219,7 +222,9 @@ class _UnitySignalState extends State<UnitySignal>
             color: AppColors.primary,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.6 * _animation.value),
+                color: AppColors.primary.withValues(
+                  alpha: 0.6 * _animation.value,
+                ),
                 blurRadius: widget.size * 1.5,
                 spreadRadius: widget.size * 0.4,
               ),
@@ -261,9 +266,7 @@ class RoadLineSeparator extends StatelessWidget {
               return SizedBox(
                 width: dashWidth,
                 height: height,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(color: color),
-                ),
+                child: DecoratedBox(decoration: BoxDecoration(color: color)),
               );
             }),
           );
