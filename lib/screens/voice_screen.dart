@@ -457,6 +457,9 @@ class _VoiceScreenState extends State<VoiceScreen> {
   }
 
   Widget _buildTrendingSection(ThemeData theme, bool isDesktop) {
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final trendingHeight = (190.0 * textScale).clamp(190.0, 320.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -476,7 +479,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 190,
+          height: trendingHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -520,34 +523,42 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                 ),
                               ),
                             ),
-                            Text(
-                              item["change"] as String,
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontSize: 10,
-                                color: AppColors.onSurfaceMuted.withValues(
-                                  alpha: 0.6,
+                            Flexible(
+                              child: Text(
+                                item["change"] as String,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontSize: 10,
+                                  color: AppColors.onSurfaceMuted.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          item["title"] as String,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                        Flexible(
+                          child: Text(
+                            item["title"] as String,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          item["description"] as String,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontSize: 13,
-                            color: AppColors.onSurfaceMuted.withValues(
-                              alpha: 0.8,
+                        Flexible(
+                          child: Text(
+                            item["description"] as String,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 13,
+                              color: AppColors.onSurfaceMuted.withValues(
+                                alpha: 0.8,
+                              ),
                             ),
                           ),
                         ),
@@ -555,53 +566,64 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.hub_rounded,
-                                  size: 14,
-                                  color: AppColors.primary,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "$activeNodesCount+ Nodes",
-                                  style: GoogleFonts.jetBrainsMono(
-                                    fontSize: 10,
-                                    color: AppColors.onSurfaceMuted,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  _toggleJoinVoid(id, item["title"]),
-                              style: TextButton.styleFrom(
-                                foregroundColor: isJoined
-                                    ? AppColors.primary
-                                    : AppColors.onSurface,
-                                padding: EdgeInsets.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
+                            Flexible(
                               child: Row(
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    isJoined ? "SIGNAL ALIGNED" : "JOIN VOID",
-                                    style: GoogleFonts.jetBrainsMono(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 1.0,
+                                  const Icon(
+                                    Icons.hub_rounded,
+                                    size: 14,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      "$activeNodesCount+ Nodes",
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 10,
+                                        color: AppColors.onSurfaceMuted,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  Icon(
-                                    isJoined
-                                        ? Icons.check
-                                        : Icons.arrow_forward_rounded,
-                                    size: 12,
-                                  ),
                                 ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: TextButton(
+                                onPressed: () =>
+                                    _toggleJoinVoid(id, item["title"]),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: isJoined
+                                      ? AppColors.primary
+                                      : AppColors.onSurface,
+                                  padding: EdgeInsets.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        isJoined ? "SIGNAL ALIGNED" : "JOIN VOID",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      isJoined
+                                          ? Icons.check
+                                          : Icons.arrow_forward_rounded,
+                                      size: 12,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -1189,7 +1211,9 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                Row(
+                Wrap(
+                  spacing: 24,
+                  runSpacing: 12,
                   children: [
                     InkWell(
                       onTap: () {
@@ -1203,6 +1227,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         );
                       },
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.share,
@@ -1221,7 +1246,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 32),
                     InkWell(
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -1234,6 +1258,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         );
                       },
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.gavel,
@@ -1355,9 +1380,11 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
     required String value,
     required List<String> items,
     required ValueChanged<String?> onChanged,
+    bool isExpanded = true,
   }) {
     return DropdownButtonFormField<String>(
       initialValue: value,
+      isExpanded: isExpanded,
       dropdownColor: AppColors.surfaceContainer,
       icon: const Icon(Icons.arrow_drop_down, color: AppColors.primary),
       style: GoogleFonts.inter(color: AppColors.onSurface, fontSize: 14),
@@ -1439,29 +1466,91 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 768;
+    final size = MediaQuery.of(context).size;
+    final maxDialogHeight = size.height * 0.85;
+
+    final categoryColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "CATEGORY",
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: AppColors.onSurfaceMuted.withValues(
+              alpha: 0.8,
+            ),
+            letterSpacing: 1.0,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildDropdownField(
+          value: _category,
+          items: _categories,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _category = value;
+              });
+            }
+          },
+        ),
+      ],
+    );
+
+    final regionColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "REGION",
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: AppColors.onSurfaceMuted.withValues(
+              alpha: 0.8,
+            ),
+            letterSpacing: 1.0,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildDropdownField(
+          value: _region,
+          items: _regions,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _region = value;
+              });
+            }
+          },
+        ),
+      ],
+    );
 
     return Center(
-      child: SingleChildScrollView(
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            width: isDesktop ? 600 : double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-            child: GlassCard(
-              borderRadius: 20,
-              padding: const EdgeInsets.all(28),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: isDesktop ? 600 : double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          constraints: BoxConstraints(maxHeight: maxDialogHeight),
+          child: GlassCard(
+            borderRadius: 20,
+            padding: const EdgeInsets.all(28),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title Header (Sticky)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
                           "REPORT SYSTEMIC PATTERN",
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -1469,193 +1558,159 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
                             letterSpacing: 1.5,
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: AppColors.onSurfaceMuted,
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const RoadLineSeparator(color: AppColors.border),
-                    const SizedBox(height: 24),
-
-                    // Title Field
-                    Text(
-                      "PATTERN SUMMARY / TITLE",
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
-                        letterSpacing: 1.0,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _titleController,
-                      style: GoogleFonts.inter(
-                        color: AppColors.onSurface,
-                        fontSize: 14,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: "e.g., Detention fee evasion at Terminal 3",
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Summary is required.";
-                        }
-                        if (value.trim().length < 5) {
-                          return "Summary must be at least 5 characters.";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Row of drop downs
-                    Row(
-                      children: [
-                        // Category Dropdown
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "CATEGORY",
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.onSurfaceMuted.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildDropdownField(
-                                value: _category,
-                                items: _categories,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _category = value;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: AppColors.onSurfaceMuted,
                         ),
-                        const SizedBox(width: 16),
+                        onPressed: () => Navigator.of(context).pop(),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const RoadLineSeparator(color: AppColors.border),
+                  const SizedBox(height: 20),
 
-                        // Region Dropdown
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "REGION",
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.onSurfaceMuted.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              _buildDropdownField(
-                                value: _region,
-                                items: _regions,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _region = value;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Severity Dropdown
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "SEVERITY",
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.onSurfaceMuted.withValues(
-                              alpha: 0.8,
+                  // Scrollable Body containing all form fields
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title Field
+                          Text(
+                            "PATTERN SUMMARY / TITLE",
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
+                              letterSpacing: 1.0,
                             ),
-                            letterSpacing: 1.0,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildDropdownField(
-                          value: _severity,
-                          items: _severities,
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _severity = value;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _titleController,
+                            style: GoogleFonts.inter(
+                              color: AppColors.onSurface,
+                              fontSize: 14,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: "e.g., Detention fee evasion at Terminal 3",
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Summary is required.";
+                              }
+                              if (value.trim().length < 5) {
+                                return "Summary must be at least 5 characters.";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
 
-                    // Description Field
-                    Text(
-                      "DETAILED PATTERN DESCRIPTION",
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _descriptionController,
-                      style: GoogleFonts.inter(
-                        color: AppColors.onSurface,
-                        fontSize: 14,
-                      ),
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        hintText:
-                            "Describe the pattern of systemic friction you have observed. Include locations, entities involved, and estimated impact. Ensure no sensitive personal identifers are broadcasted.",
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Description is required.";
-                        }
-                        if (value.trim().length < 20) {
-                          return "Please provide more detail (at least 20 characters).";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 28),
+                          // Category and Region fields (Row on wide, Column on narrow dialogs)
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final useRow = constraints.maxWidth > 400;
+                              return useRow
+                                  ? Row(
+                                      children: [
+                                        Expanded(child: categoryColumn),
+                                        const SizedBox(width: 16),
+                                        Expanded(child: regionColumn),
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        categoryColumn,
+                                        const SizedBox(height: 20),
+                                        regionColumn,
+                                      ],
+                                    );
+                            },
+                          ),
+                          const SizedBox(height: 20),
 
-                    // Submit & Cancel buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
+                          // Severity Dropdown
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "SEVERITY",
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.onSurfaceMuted.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildDropdownField(
+                                value: _severity,
+                                items: _severities,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _severity = value;
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Description Field
+                          Text(
+                            "DETAILED PATTERN DESCRIPTION",
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _descriptionController,
+                            style: GoogleFonts.inter(
+                              color: AppColors.onSurface,
+                              fontSize: 14,
+                            ),
+                            maxLines: 4,
+                            decoration: const InputDecoration(
+                              hintText:
+                                  "Describe the pattern of systemic friction you have observed. Include locations, entities involved, and estimated impact. Ensure no sensitive personal identifiers are broadcasted.",
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Description is required.";
+                              }
+                              if (value.trim().length < 20) {
+                                return "Please provide more detail (at least 20 characters).";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Sticky Footer Action buttons (Row on wide viewports, Column on mobile viewports)
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final useRow = constraints.maxWidth > 340;
+                      final buttons = [
                         OutlinedButton(
                           onPressed: _submitting
                               ? null
@@ -1666,6 +1721,10 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
                           ),
                           child: Text(
                             "CANCEL",
@@ -1675,7 +1734,7 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        if (useRow) const SizedBox(width: 16) else const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: _submitting ? null : _submit,
                           style: ElevatedButton.styleFrom(
@@ -1683,6 +1742,10 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
                             foregroundColor: AppColors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
                             ),
                           ),
                           child: _submitting
@@ -1697,23 +1760,38 @@ class _ReportPatternDialogState extends State<_ReportPatternDialog> {
                                   ),
                                 )
                               : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Icon(Icons.wifi_tethering, size: 16),
                                     const SizedBox(width: 8),
-                                    Text(
-                                      "BROADCAST SIGNAL",
-                                      style: GoogleFonts.jetBrainsMono(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
+                                    Flexible(
+                                      child: Text(
+                                        "BROADCAST SIGNAL",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ];
+
+                      return useRow
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: buttons,
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: buttons,
+                            );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

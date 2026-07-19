@@ -256,13 +256,16 @@ class _ConnectScreenState extends State<ConnectScreen>
                       },
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      'GLOBAL SIGNAL ACTIVE',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.primary,
-                        letterSpacing: 1.5,
+                    Flexible(
+                      child: Text(
+                        'GLOBAL SIGNAL ACTIVE',
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.primary,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                     ),
                   ],
@@ -374,10 +377,8 @@ class _ConnectScreenState extends State<ConnectScreen>
       width: fullWidth ? double.infinity : null,
       height: 52,
       child: isPrimary
-          ? ElevatedButton.icon(
+          ? ElevatedButton(
               onPressed: onTap,
-              icon: Icon(icon, size: 20),
-              label: Text(label),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: const Color(0xFF1A0F00),
@@ -391,11 +392,23 @@ class _ConnectScreenState extends State<ConnectScreen>
                 ),
                 elevation: 0,
               ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             )
-          : OutlinedButton.icon(
+          : OutlinedButton(
               onPressed: onTap,
-              icon: Icon(icon, size: 20),
-              label: Text(label),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.onSurface,
                 padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -411,6 +424,20 @@ class _ConnectScreenState extends State<ConnectScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
@@ -424,26 +451,42 @@ class _ConnectScreenState extends State<ConnectScreen>
       {'value': '32', 'label': 'Corridors Active'},
     ];
 
+    final width = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    double childAspectRatio = 1.3;
+    if (!isDesktop) {
+      if (width < 360) {
+        childAspectRatio = 0.95;
+      } else if (width < 400) {
+        childAspectRatio = 1.1;
+      }
+      childAspectRatio = (childAspectRatio / textScale).clamp(0.6, 1.5);
+    } else {
+      childAspectRatio = (1.6 / textScale).clamp(1.0, 2.0);
+    }
+
+    final cardPadding = width < 360 ? const EdgeInsets.all(12) : const EdgeInsets.all(20);
+
     return GridView.count(
       crossAxisCount: isDesktop ? 4 : 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
-      childAspectRatio: isDesktop ? 1.6 : 1.3,
+      childAspectRatio: childAspectRatio,
       children: stats
-          .map((s) => _buildStatCard(s['value']!, s['label']!))
+          .map((s) => _buildStatCard(s['value']!, s['label']!, cardPadding))
           .toList(),
     );
   }
 
-  Widget _buildStatCard(String value, String label) {
+  Widget _buildStatCard(String value, String label, EdgeInsets padding) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: padding,
           decoration: BoxDecoration(
             color: AppColors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(16),
@@ -455,24 +498,31 @@ class _ConnectScreenState extends State<ConnectScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
-                  letterSpacing: -1,
+              Flexible(
+                child: Text(
+                  value,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                    letterSpacing: -1,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                label.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.onSurfaceMuted,
-                  letterSpacing: 1.5,
+              Flexible(
+                child: Text(
+                  label.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.onSurfaceMuted,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ],
@@ -540,27 +590,76 @@ class _ConnectScreenState extends State<ConnectScreen>
                 ),
               ),
 
-              // Header Labels
+              // Header Labels & Badge (Wrap for responsiveness)
               Positioned(
-                top: 24,
-                left: 24,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                top: 20,
+                left: 20,
+                right: 20,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
-                    Text(
-                      'Global Signal Map',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.onSurface,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Global Signal Map',
+                          style: GoogleFonts.inter(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
+                        Text(
+                          'Live movement density',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 10,
+                            color: AppColors.onSurfaceMuted,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'Live movement density',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        color: AppColors.onSurfaceMuted,
-                        letterSpacing: 1,
+                    GestureDetector(
+                      onTap: () => _showComingSoon('Interactive Global Map'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.border.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.touch_app_rounded,
+                              color: AppColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'INTERACTIVE MAP V2',
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 9,
+                                  color: AppColors.primary,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -571,57 +670,18 @@ class _ConnectScreenState extends State<ConnectScreen>
               Positioned(
                 bottom: 20,
                 left: 24,
-                child: Row(
+                right: 24,
+                child: Wrap(
+                  spacing: 20,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     _buildLegendItem(AppColors.primary, 'High Activity'),
-                    const SizedBox(width: 20),
                     _buildLegendItem(
                       AppColors.primary.withValues(alpha: 0.35),
                       'Connected',
                     ),
                   ],
-                ),
-              ),
-
-              // Coming Soon overlay tap
-              Positioned(
-                top: 20,
-                right: 20,
-                child: GestureDetector(
-                  onTap: () => _showComingSoon('Interactive Global Map'),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.touch_app_rounded,
-                          color: AppColors.primary,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'INTERACTIVE MAP V2',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 9,
-                            color: AppColors.primary,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -685,6 +745,7 @@ class _ConnectScreenState extends State<ConnectScreen>
 
   Widget _buildLegendItem(Color color, String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 8,
@@ -692,12 +753,15 @@ class _ConnectScreenState extends State<ConnectScreen>
           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 8),
-        Text(
-          label.toUpperCase(),
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 9,
-            color: AppColors.onSurfaceMuted,
-            letterSpacing: 1,
+        Flexible(
+          child: Text(
+            label.toUpperCase(),
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 9,
+              color: AppColors.onSurfaceMuted,
+              letterSpacing: 1,
+            ),
           ),
         ),
       ],
@@ -726,14 +790,18 @@ class _ConnectScreenState extends State<ConnectScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Movement Insights',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.onSurface,
+                  Expanded(
+                    child: Text(
+                      'Movement Insights',
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.onSurface,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 12),
                   GestureDetector(
                     onTap: () => _showComingSoon('All Articles'),
                     child: Text(
@@ -779,31 +847,39 @@ class _ConnectScreenState extends State<ConnectScreen>
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Color(
-                    insight['tagColor'] as int,
-                  ).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  insight['tag'] as String,
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                    color: Color(insight['tagColor'] as int),
-                    letterSpacing: 1,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Color(
+                      insight['tagColor'] as int,
+                    ).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    insight['tag'] as String,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: Color(insight['tagColor'] as int),
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
-              Text(
-                insight['readTime'] as String,
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 9,
-                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
-                  letterSpacing: 0.5,
+              Flexible(
+                child: Text(
+                  insight['readTime'] as String,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: AppColors.onSurfaceMuted.withValues(alpha: 0.6),
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ],
@@ -836,6 +912,22 @@ class _ConnectScreenState extends State<ConnectScreen>
 
   // ── Community Features ────────────────────────────────────────────────────
   Widget _buildCommunitySection(bool isDesktop) {
+    final width = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    double communityAspectRatio = 1.6;
+    if (!isDesktop) {
+      if (width < 360) {
+        communityAspectRatio = 1.15;
+      } else if (width < 400) {
+        communityAspectRatio = 1.35;
+      }
+      communityAspectRatio = (communityAspectRatio / textScale).clamp(0.7, 1.8);
+    } else {
+      communityAspectRatio = (2.2 / textScale).clamp(1.2, 2.5);
+    }
+
+    final cardPadding = width < 360 ? const EdgeInsets.all(10) : const EdgeInsets.all(16);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -867,32 +959,39 @@ class _ConnectScreenState extends State<ConnectScreen>
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              'COMMUNITY HUB',
-              style: GoogleFonts.jetBrainsMono(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-                letterSpacing: 2,
+            Flexible(
+              child: Text(
+                'COMMUNITY HUB',
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                  letterSpacing: 2,
+                ),
               ),
             ),
             const SizedBox(width: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.3),
-                  width: 1,
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: Text(
-                'COMING IN V2',
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 9,
-                  color: AppColors.onSurfaceMuted,
-                  letterSpacing: 1.5,
+                child: Text(
+                  'COMING IN V2',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
+                    color: AppColors.onSurfaceMuted,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -916,16 +1015,16 @@ class _ConnectScreenState extends State<ConnectScreen>
           physics: const NeverScrollableScrollPhysics(),
           crossAxisSpacing: 14,
           mainAxisSpacing: 14,
-          childAspectRatio: isDesktop ? 2.2 : 1.6,
+          childAspectRatio: communityAspectRatio,
           children: _communityFeatures
-              .map((f) => _buildFeatureCard(f))
+              .map((f) => _buildFeatureCard(f, cardPadding))
               .toList(),
         ),
       ],
     );
   }
 
-  Widget _buildFeatureCard(Map<String, dynamic> feature) {
+  Widget _buildFeatureCard(Map<String, dynamic> feature, EdgeInsets padding) {
     return GestureDetector(
       onTap: () => _showComingSoon(feature['label'] as String),
       child: ClipRRect(
@@ -933,7 +1032,7 @@ class _ConnectScreenState extends State<ConnectScreen>
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
-            padding: const EdgeInsets.all(18),
+            padding: padding,
             decoration: BoxDecoration(
               color: AppColors.surfaceContainer.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(14),
@@ -954,52 +1053,68 @@ class _ConnectScreenState extends State<ConnectScreen>
                       color: AppColors.primary,
                       size: 22,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                          width: 1,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
                         ),
-                      ),
-                      child: Text(
-                        feature['badge'] as String,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary.withValues(alpha: 0.7),
-                          letterSpacing: 1,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          feature['badge'] as String,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary.withValues(alpha: 0.7),
+                            letterSpacing: 1,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      feature['label'] as String,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.onSurface,
+                const SizedBox(height: 8),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          feature['label'] as String,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.onSurface,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      feature['desc'] as String,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: AppColors.onSurfaceMuted.withValues(alpha: 0.7),
-                        height: 1.3,
+                      const SizedBox(height: 3),
+                      Flexible(
+                        child: Text(
+                          feature['desc'] as String,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: AppColors.onSurfaceMuted.withValues(alpha: 0.7),
+                            height: 1.3,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -1038,28 +1153,26 @@ class _ConnectScreenState extends State<ConnectScreen>
           ),
           const SizedBox(height: 32),
 
-          SizedBox(
-            height: 56,
-            child: ElevatedButton.icon(
-              onPressed: () => widget.onNavigateToDeclare?.call(),
-              icon: const Icon(Icons.add_road_rounded, size: 22),
-              label: Text(
-                'Begin the Declaration of Unity',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
+          ElevatedButton.icon(
+            onPressed: () => widget.onNavigateToDeclare?.call(),
+            icon: const Icon(Icons.add_road_rounded, size: 22),
+            label: Text(
+              'Begin the Declaration of Unity',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: const Color(0xFF1A0F00),
-                padding: const EdgeInsets.symmetric(horizontal: 36),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-                shadowColor: AppColors.primary.withValues(alpha: 0.4),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: const Color(0xFF1A0F00),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
+              elevation: 0,
+              shadowColor: AppColors.primary.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -1102,6 +1215,7 @@ class _ComingSoonDialogState extends State<_ComingSoonDialog>
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return FadeTransition(
       opacity: _fade,
       child: ScaleTransition(
@@ -1114,7 +1228,9 @@ class _ComingSoonDialogState extends State<_ComingSoonDialog>
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 380),
-                padding: const EdgeInsets.all(40),
+                padding: width < 360
+                    ? const EdgeInsets.symmetric(horizontal: 20, vertical: 24)
+                    : const EdgeInsets.all(40),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceContainer.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(24),

@@ -110,12 +110,15 @@ class _HomeScreenState extends State<HomeScreen>
                   titleSpacing: 20,
                   title: Row(
                     children: [
-                      Text(
-                        "iUnity",
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -1.2,
+                      Flexible(
+                        child: Text(
+                          "iUnity",
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1.2,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -308,102 +311,116 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildDesktopHeader(ThemeData theme, bool isLoggedIn) {
     return Container(
-      height: 64,
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Text(
-                "iUnity",
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1.2,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "iUnity",
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1.2,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const UnitySignal(size: 6),
+              ],
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildDesktopNavItem("Home", 0, isLoggedIn),
+                    _buildDesktopNavItem("Declare", 1, isLoggedIn),
+                    _buildDesktopNavItem("Voice", 2, isLoggedIn),
+                    _buildDesktopNavItem("Connect", 3, isLoggedIn),
+                    _buildDesktopNavItem("Doctrine", 4, isLoggedIn),
+                  ],
                 ),
               ),
-              const SizedBox(width: 8),
-              const UnitySignal(size: 6),
-            ],
-          ),
-          Row(
-            children: [
-              _buildDesktopNavItem("Home", 0, isLoggedIn),
-              _buildDesktopNavItem("Declare", 1, isLoggedIn),
-              _buildDesktopNavItem("Voice", 2, isLoggedIn),
-              _buildDesktopNavItem("Connect", 3, isLoggedIn),
-              _buildDesktopNavItem("Doctrine", 4, isLoggedIn),
-            ],
-          ),
-          Row(
-            children: [
-              const Icon(Icons.language, color: AppColors.primary, size: 20),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(
-                  Icons.person_outline_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-                onPressed: () {
-                  if (isLoggedIn) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const ProfileScreen(),
-                      ),
-                    );
-                  } else {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  }
-                },
-                tooltip: isLoggedIn ? "Driver Profile" : "Connect Signal",
-              ),
-              const SizedBox(width: 16),
-              if (isLoggedIn)
+            ),
+            const SizedBox(width: 16),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Icon(Icons.language, color: AppColors.primary, size: 20),
+                const SizedBox(width: 16),
                 IconButton(
                   icon: const Icon(
-                    Icons.logout_rounded,
+                    Icons.person_outline_rounded,
                     color: AppColors.primary,
                     size: 20,
                   ),
-                  onPressed: _handleLogout,
-                  tooltip: "Disconnect Signal",
-                )
-              else
-                TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
+                    if (isLoggedIn) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    }
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                  ),
-                  child: Text(
-                    'LOG IN',
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
+                  tooltip: isLoggedIn ? "Driver Profile" : "Connect Signal",
                 ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 16),
+                if (isLoggedIn)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.logout_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    onPressed: _handleLogout,
+                    tooltip: "Disconnect Signal",
+                    // Use a unique ID key if needed but this is standard
+                  )
+                else
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: Text(
+                      'LOG IN',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -434,57 +451,61 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildMobileBottomNavBar(bool isLoggedIn) {
     return Container(
-      height: 70,
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLow.withValues(alpha: 0.9),
         border: const Border(
           top: BorderSide(color: AppColors.border, width: 0.5),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(
-            child: _buildMobileNavItem(
-              Icons.home_rounded,
-              "Home",
-              0,
-              isLoggedIn,
-            ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: _buildMobileNavItem(
+                  Icons.home_rounded,
+                  "Home",
+                  0,
+                  isLoggedIn,
+                ),
+              ),
+              Expanded(
+                child: _buildMobileNavItem(
+                  Icons.verified_user_rounded,
+                  "Declare",
+                  1,
+                  isLoggedIn,
+                ),
+              ),
+              Expanded(
+                child: _buildMobileNavItem(
+                  Icons.campaign_rounded,
+                  "Voice",
+                  2,
+                  isLoggedIn,
+                ),
+              ),
+              Expanded(
+                child: _buildMobileNavItem(
+                  Icons.groups_rounded,
+                  "Connect",
+                  3,
+                  isLoggedIn,
+                ),
+              ),
+              Expanded(
+                child: _buildMobileNavItem(
+                  Icons.auto_stories_rounded,
+                  "Doctrine",
+                  4,
+                  isLoggedIn,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: _buildMobileNavItem(
-              Icons.verified_user_rounded,
-              "Declare",
-              1,
-              isLoggedIn,
-            ),
-          ),
-          Expanded(
-            child: _buildMobileNavItem(
-              Icons.campaign_rounded,
-              "Voice",
-              2,
-              isLoggedIn,
-            ),
-          ),
-          Expanded(
-            child: _buildMobileNavItem(
-              Icons.groups_rounded,
-              "Connect",
-              3,
-              isLoggedIn,
-            ),
-          ),
-          Expanded(
-            child: _buildMobileNavItem(
-              Icons.auto_stories_rounded,
-              "Doctrine",
-              4,
-              isLoggedIn,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -500,6 +521,7 @@ class _HomeScreenState extends State<HomeScreen>
       onTap: () => _onNavItemTapped(index, label, isLoggedIn),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
@@ -518,14 +540,18 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.jetBrainsMono(
-              fontSize: 9,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive
-                  ? AppColors.primary
-                  : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                color: isActive
+                    ? AppColors.primary
+                    : AppColors.onSurfaceMuted.withValues(alpha: 0.6),
+              ),
             ),
           ),
         ],
@@ -557,13 +583,16 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 const UnitySignal(size: 8),
                 const SizedBox(width: 10),
-                Text(
-                  "GLOBAL SIGNAL ACTIVE",
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 2.0,
+                Flexible(
+                  child: Text(
+                    "GLOBAL SIGNAL ACTIVE",
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: AppColors.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.0,
+                    ),
                   ),
                 ),
               ],
@@ -637,15 +666,17 @@ class _HomeScreenState extends State<HomeScreen>
 
           // Action Buttons
           isDesktop
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ? Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 16,
+                  runSpacing: 12,
                   children: [
                     ElevatedButton(
                       onPressed: () =>
                           _onNavItemTapped(4, "Doctrine", isLoggedIn),
                       child: const Text("THE TRUCKERS MANIFESTO"),
                     ),
-                    const SizedBox(width: 16),
                     OutlinedButton(
                       onPressed: () =>
                           _onNavItemTapped(4, "Doctrine", isLoggedIn),
@@ -731,6 +762,20 @@ class _HomeScreenState extends State<HomeScreen>
       {"value": "32", "label": "CORRIDORS ACTIVE"},
     ];
 
+    final width = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    double childAspectRatio = 1.3;
+    if (!isDesktop) {
+      if (width < 360) {
+        childAspectRatio = 1.0;
+      } else if (width < 400) {
+        childAspectRatio = 1.15;
+      }
+      childAspectRatio = (childAspectRatio / textScale).clamp(0.7, 1.5);
+    } else {
+      childAspectRatio = (1.6 / textScale).clamp(1.0, 2.0);
+    }
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -738,7 +783,7 @@ class _HomeScreenState extends State<HomeScreen>
         crossAxisCount: isDesktop ? 4 : 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: isDesktop ? 1.6 : 1.3,
+        childAspectRatio: childAspectRatio,
       ),
       itemCount: stats.length,
       itemBuilder: (context, index) {
@@ -748,22 +793,29 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                stats[index]["value"]!,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  fontSize: isDesktop ? 36 : 28,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
+              Flexible(
+                child: Text(
+                  stats[index]["value"]!,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontSize: isDesktop ? 36 : 28,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                stats[index]["label"]!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontSize: 10,
-                  color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
-                  letterSpacing: 1.2,
+              Flexible(
+                child: Text(
+                  stats[index]["label"]!,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontSize: 10,
+                    color: AppColors.onSurfaceMuted.withValues(alpha: 0.8),
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
             ],
@@ -804,25 +856,31 @@ class _HomeScreenState extends State<HomeScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Global Signal Map",
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Global Signal Map",
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "LIVE MOVEMENT DENSITY",
-                    style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      "LIVE MOVEMENT DENSITY",
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelLarge?.copyWith(fontSize: 10),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 16),
               // Signal Status Indicator
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedBuilder(
                     animation: _pulseAnimation,
@@ -884,10 +942,11 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           const SizedBox(height: 16),
-          Row(
+          Wrap(
+            spacing: 20,
+            runSpacing: 8,
             children: [
               _buildMapLegendItem(AppColors.primary, "HIGH ACTIVITY"),
-              const SizedBox(width: 20),
               _buildMapLegendItem(
                 AppColors.primary.withValues(alpha: 0.4),
                 "CONNECTED CORRIDORS",
@@ -901,6 +960,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildMapLegendItem(Color color, String label) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 8,
@@ -908,12 +968,15 @@ class _HomeScreenState extends State<HomeScreen>
           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 8),
-        Text(
-          label,
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 9,
-            color: AppColors.onSurfaceMuted,
-            letterSpacing: 1.0,
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 9,
+              color: AppColors.onSurfaceMuted,
+              letterSpacing: 1.0,
+            ),
           ),
         ),
       ],
@@ -954,13 +1017,17 @@ class _HomeScreenState extends State<HomeScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Movement Insights",
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
+              Expanded(
+                child: Text(
+                  "Movement Insights",
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
                 ),
               ),
+              const SizedBox(width: 16),
               InkWell(
                 onTap: () {
                   if (isLoggedIn) {
@@ -1018,31 +1085,39 @@ class _HomeScreenState extends State<HomeScreen>
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item["category"]!,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: AppColors.primary,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              item["category"]!,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: AppColors.primary,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          item["readTime"]!,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontSize: 8,
-                            color: AppColors.onSurfaceMuted.withValues(
-                              alpha: 0.6,
+                        Flexible(
+                          child: Text(
+                            item["readTime"]!,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontSize: 8,
+                              color: AppColors.onSurfaceMuted.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                           ),
                         ),
@@ -1078,6 +1153,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildFinalCTA(ThemeData theme, bool isLoggedIn) {
+    final isDesktop = MediaQuery.of(context).size.width > 960;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40.0),
@@ -1098,9 +1174,15 @@ class _HomeScreenState extends State<HomeScreen>
           ElevatedButton(
             onPressed: () => _onNavItemTapped(4, "Doctrine", isLoggedIn),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 40 : 20,
+                vertical: 20,
+              ),
             ),
-            child: const Text("READ THE DECLARATION OF UNITY"),
+            child: const Text(
+              "READ THE DECLARATION OF UNITY",
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),
